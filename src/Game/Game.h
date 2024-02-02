@@ -9,12 +9,14 @@ class Game {
     private:
         std::vector<Role*> *roles;
         std::vector<Character*> *characters;
+        std::vector<Card*> *cards;
         std::vector<Player*> *players;
 
     public:
         Game();
         void initRole(int nbPlayers);
         void initCharacter();
+        void initCard();
         ~Game();
 };
 

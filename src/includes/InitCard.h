@@ -33,4 +33,32 @@
 #define Kiseru Weapon(WeaponType::KISERU, 2, 1)
 #define Wakizashi Weapon(WeaponType::WAKIZASHI, 3, 1)
 
+#define NB_COPY_CRI_DE_GUERRE 4
+#define NB_COPY_DAIMYO 3
+#define NB_COPY_DIVERSION 5
+#define NB_COPY_GEISHA 6
+#define NB_COPY_MEDITATION 3
+#define NB_COPY_PARADE 15
+#define NB_COPY_CEREMONIE_DU_THE 4
+#define NB_COPY_JU_JITSU 3
+
+#define NB_COPY_ATTAQUE_RAPIDE 3
+#define NB_COPY_CODE_DU_BUSHIDO 2
+#define NB_COPY_ARMURE 4
+#define NB_COPY_CONCENTRATION 6
+
+#define NB_COPY_NODACHI 1
+#define NB_COPY_NAGINATA 2
+#define NB_COPY_NAGAYARI 1
+#define NB_COPY_TANEGASHIMA 1
+#define NB_COPY_DAIKYU 1
+#define NB_COPY_BO 5
+#define NB_COPY_KUSARIGAMA 4
+#define NB_COPY_KATANA 1
+#define NB_COPY_SHURIKEN 3
+#define NB_COPY_KANABO 1
+#define NB_COPY_BOKKEN 6
+#define NB_COPY_KISERU 5
+#define NB_COPY_WAKIZASHI 1
+
 #endif // INIT_CARD_H
