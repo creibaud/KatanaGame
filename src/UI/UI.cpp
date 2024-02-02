@@ -112,6 +112,13 @@ void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleIma
         spritePlayers->push_back(sprite);
     }
 
+    sf::Texture *characterTexture = new sf::Texture();
+    characterTexture->loadFromImage(*images->at(players->at(this->game->getIndexActualPlayer())->getCharacter()->getIndex()));
+
+    sf::Sprite *characterSprite = new sf::Sprite();
+    characterSprite->setTexture(*characterTexture);
+    characterSprite->setPosition(SCREEN_WIDTH - 150 - characterSprite->getTexture()->getSize().x, SCREEN_HEIGHT - 100 - characterSprite->getTexture()->getSize().y);
+
     switch (this->game->getNbPlayers()) {
         case 4:
             spritePlayers->at(0)->setPosition(200, SCREEN_HEIGHT / 2 - spritePlayers->at(1)->getTexture()->getSize().y / 2 - 50);
@@ -201,6 +208,8 @@ void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleIma
             this->window->draw(*roleSpriteBack);
         }
 
+        this->window->draw(*characterSprite);
+
         this->window->display();
     }
 
@@ -214,8 +223,12 @@ void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleIma
     }
     delete spriteHand;
 
+    delete roleTextureFace;
+    delete roleTextureBack;
     delete roleSpriteFace;
     delete roleSpriteBack;
+    delete characterTexture;
+    delete characterSprite;
 }
 
 UI::~UI() {
