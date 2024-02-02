@@ -5,6 +5,18 @@ Player::Player(Role *role, Character *character)
     this->hand = new std::vector<Card*>();
 }
 
+Role* Player::getRole() const {
+    return this->role;
+}
+
+Character* Player::getCharacter() const {
+    return this->character;
+}
+
+std::vector<Card*>* Player::getHand() const {
+    return this->hand;
+}
+
 Player::~Player() {
     delete this->role;
     delete this->character;

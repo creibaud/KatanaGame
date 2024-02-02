@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <iostream>
 #include <random>
 #include <algorithm>
 #include "../Player/Player.h"
@@ -11,12 +12,15 @@ class Game {
         std::vector<Character*> *characters;
         std::vector<Card*> *cards;
         std::vector<Player*> *players;
+        int nbPlayers;
 
     public:
         Game();
-        void initRole(int nbPlayers);
+        void initRole();
         void initCharacter();
         void initCard();
+        void initPlayer();
+        void setNbPlayers(int nbPlayers);
         ~Game();
 };
 

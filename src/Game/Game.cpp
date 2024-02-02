@@ -6,7 +6,7 @@ Game::Game() {
     this->players = new std::vector<Player*>();
 }
 
-void Game::initRole(int nbPlayers) {
+void Game::initRole() {
     this->roles->push_back(new Shogun);
     this->roles->push_back(new Samurai);
 
@@ -24,7 +24,7 @@ void Game::initRole(int nbPlayers) {
         ninja->pop_back();
     }
 
-    switch (nbPlayers) {
+    switch (this->nbPlayers) {
         case 5:
             this->roles->push_back(new Ronin);
             break;
@@ -63,6 +63,10 @@ void Game::initCharacter() {
     this->characters->push_back(new Benkei);
     this->characters->push_back(new Musashi);
     this->characters->push_back(new Kojiro);
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(this->characters->begin(), this->characters->end(), g);
 }
 
 void Game::initCard() {
@@ -185,9 +189,11 @@ void Game::initCard() {
     std::shuffle(this->cards->begin(), this->cards->end(), g);
 }
 
-Game::~Game() {
-    for (std::vector<Role*>::iterator it = this->roles->begin(); it != this->roles->end(); ++it) {
-        delete *it;
+void Game::initPlayer() {
+    for (int i = 0; i < this->nbPlayers; i++) {
+        this->players->push_back(new Player(this->roles->back(), this->characters->back()));
+        this->roles->pop_back();
+        this->characters->pop_back();
     }
     delete this->roles;
 
@@ -195,7 +201,52 @@ Game::~Game() {
         delete *it;
     }
     delete this->characters;
+    
+    int indexShogun = -1;
+    for (int i = 0; i < this->nbPlayers; i++) {
+        if (this->players->at(i)->getRole()->getType() == RoleType::SHOGUN) {
+            indexShogun = i;
+            break;
+        }
+    }
 
+    std::rotate(this->players->begin(), this->players->begin() + indexShogun, this->players->end());
+
+    for (int i = 0; i < this->nbPlayers; i++) {
+        int nbCard;
+
+        switch (i) {
+            case 0:
+                nbCard = 4;
+                break;
+            case 1:
+            case 2:
+                nbCard = 5;
+                break;
+            case 3:
+            case 4:
+                nbCard = 6;
+                break;
+            case 5:
+            case 6:
+                nbCard = 7;
+                break;
+            default:
+                break;
+        }
+
+        for (int j = 0; j < nbCard; j++) {
+            this->players->at(i)->getHand()->push_back(this->cards->back());
+            this->cards->pop_back();
+        }
+    }
+}
+
+void Game::setNbPlayers(int nbPlayers) {
+    this->nbPlayers = nbPlayers;
+}
+
+Game::~Game() {
     for (std::vector<Card*>::iterator it = this->cards->begin(); it != this->cards->end(); ++it) {
         delete *it;
     }
