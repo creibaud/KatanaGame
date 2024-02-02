@@ -95,7 +95,7 @@ void UI::init(sf::Image *image1, sf::Image *image2) {
     this->game->initPlayer();
 }
 
-void UI::start(std::vector<sf::Image*> *images) {
+void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleImages, sf::Image *backRole) {
     this->window->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Katana", sf::Style::Titlebar | sf::Style::Close);
     this->window->setFramerateLimit(FPS);
 
@@ -118,13 +118,46 @@ void UI::start(std::vector<sf::Image*> *images) {
             spritePlayers->at(1)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2, 100);
             spritePlayers->at(2)->setPosition(SCREEN_WIDTH - 200 - spritePlayers->at(0)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - spritePlayers->at(1)->getTexture()->getSize().y / 2 - 50);
             break;
-        
+        case 5:
+            spritePlayers->at(0)->setPosition(200, SCREEN_HEIGHT / 2 - spritePlayers->at(1)->getTexture()->getSize().y / 2 - 50);
+            spritePlayers->at(1)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2 - 250, 100);
+            spritePlayers->at(2)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2 + 250, 100);
+            spritePlayers->at(3)->setPosition(SCREEN_WIDTH - 200 - spritePlayers->at(0)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - spritePlayers->at(1)->getTexture()->getSize().y / 2 - 50);
+            break;
+        case 6:
+            spritePlayers->at(0)->setPosition(200, SCREEN_HEIGHT / 2 - spritePlayers->at(1)->getTexture()->getSize().y / 2 - 50);
+            spritePlayers->at(1)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2 - 375, 175);
+            spritePlayers->at(2)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2, 100);
+            spritePlayers->at(3)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2 + 375, 175);
+            spritePlayers->at(4)->setPosition(SCREEN_WIDTH - 200 - spritePlayers->at(0)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - spritePlayers->at(1)->getTexture()->getSize().y / 2 - 50);
+            break;
+        case 7:
+            spritePlayers->at(0)->setPosition(225, SCREEN_HEIGHT / 2 - spritePlayers->at(1)->getTexture()->getSize().y / 2 - 50);
+            spritePlayers->at(1)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2 - 450, 175);
+            spritePlayers->at(2)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2 - 150, 100);
+            spritePlayers->at(3)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2 + 150, 100);
+            spritePlayers->at(4)->setPosition(SCREEN_WIDTH / 2 - spritePlayers->at(0)->getTexture()->getSize().x / 2 + 450, 175);
+            spritePlayers->at(5)->setPosition(SCREEN_WIDTH - 225 - spritePlayers->at(0)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - spritePlayers->at(1)->getTexture()->getSize().y / 2 - 50);
         default:
             break;
     }
 
     std::vector<Card*> *hand = players->at(this->game->getIndexActualPlayer())->getHand();
     std::vector<sf::Sprite*> *spriteHand = new std::vector<sf::Sprite*>();
+
+    sf::Texture *roleTextureFace = new sf::Texture();
+    roleTextureFace->loadFromImage(*roleImages->at(players->at(this->game->getIndexActualPlayer())->getRole()->getIndex()));
+
+    sf::Sprite *roleSpriteFace = new sf::Sprite();
+    roleSpriteFace->setTexture(*roleTextureFace);
+    roleSpriteFace->setPosition(150, SCREEN_HEIGHT - 100 - roleSpriteFace->getTexture()->getSize().y);
+
+    sf::Texture *roleTextureBack = new sf::Texture();
+    roleTextureBack->loadFromImage(*backRole);
+
+    sf::Sprite *roleSpriteBack = new sf::Sprite();
+    roleSpriteBack->setTexture(*roleTextureBack);
+    roleSpriteBack->setPosition(150, SCREEN_HEIGHT - 100 - roleSpriteBack->getTexture()->getSize().y);
 
     for (std::vector<Card*>::size_type i = 0; i < hand->size(); i++) {
         sf::Texture *texture = new sf::Texture();
@@ -162,6 +195,12 @@ void UI::start(std::vector<sf::Image*> *images) {
             this->window->draw(*(*it));
         }
 
+        if (roleSpriteFace->getGlobalBounds().contains(mousePos.x, mousePos.y) || players->at(this->game->getIndexActualPlayer())->getRole()->getType() == RoleType::SHOGUN) {
+            this->window->draw(*roleSpriteFace);
+        } else {
+            this->window->draw(*roleSpriteBack);
+        }
+
         this->window->display();
     }
 
@@ -174,6 +213,9 @@ void UI::start(std::vector<sf::Image*> *images) {
         delete *it;
     }
     delete spriteHand;
+
+    delete roleSpriteFace;
+    delete roleSpriteBack;
 }
 
 UI::~UI() {

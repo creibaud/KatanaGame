@@ -11,3 +11,7 @@ RoleType Role::getType() const {
 int Role::getLevel() const {
     return this->level;
 }
+
+int Role::getIndex() const {
+    return static_cast<int>(this->type);
+}

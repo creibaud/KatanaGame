@@ -17,6 +17,7 @@ class Role {
         Role(RoleType type, int level = 0);
         RoleType getType() const;
         int getLevel() const;
+        int getIndex() const;
 };
 
 #endif // ROLE_H
