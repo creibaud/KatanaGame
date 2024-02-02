@@ -24,6 +24,7 @@ class Character {
     public:
         Character(CharacterType type, int HP);
         CharacterType getType() const;
+        int getIndex() const;
         int getHP() const;
 };
 

@@ -9,3 +9,7 @@ CharacterType Character::getType() const {
 int Character::getHP() const {
     return this->HP;
 }
+
+int Character::getIndex() const {
+    return static_cast<int>(this->type);
+}

@@ -1,7 +1,7 @@
 #ifndef UI_H
 #define UI_H
 
-#include <iostream>
+#include <cmath>
 #include "Button/Button.h"
 #include "../Game/Game.h"
 
@@ -18,7 +18,7 @@ class UI {
     public:
         UI(sf::Font *font);
         void init(sf::Image *image1, sf::Image *image2);
-        void start();
+        void start(std::vector<sf::Image*> *images);
         ~UI();
 };
 

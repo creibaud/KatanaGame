@@ -13,6 +13,7 @@ class Game {
         std::vector<Card*> *cards;
         std::vector<Player*> *players;
         int nbPlayers;
+        int indexActualPlayer;
 
     public:
         Game();
@@ -20,7 +21,13 @@ class Game {
         void initCharacter();
         void initCard();
         void initPlayer();
+
         void setNbPlayers(int nbPlayers);
+
+        int getNbPlayers() const;
+        int getIndexActualPlayer() const;
+        std::vector<Player*> *getPlayers() const;
+
         ~Game();
 };
 

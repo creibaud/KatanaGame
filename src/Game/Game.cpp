@@ -4,6 +4,7 @@ Game::Game() {
     this->roles = new std::vector<Role*>();
     this->characters = new std::vector<Character*>();
     this->players = new std::vector<Player*>();
+    this->indexActualPlayer = 0;
 }
 
 void Game::initRole() {
@@ -244,6 +245,18 @@ void Game::initPlayer() {
 
 void Game::setNbPlayers(int nbPlayers) {
     this->nbPlayers = nbPlayers;
+}
+
+int Game::getNbPlayers() const {
+    return this->nbPlayers;
+}
+
+int Game::getIndexActualPlayer() const {
+    return this->indexActualPlayer;
+}
+
+std::vector<Player*> *Game::getPlayers() const {
+    return this->players;
 }
 
 Game::~Game() {
