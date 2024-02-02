@@ -9,8 +9,8 @@ class Button {
         sf::Text text;
 
     public:
-        Button(sf::Vector2f position, sf::Vector2f size, sf::Color color, sf::Font *font, std::string text, int fontSize);
-        void draw(sf::RenderWindow &window);
+        Button(sf::Vector2f position, sf::Vector2f size, sf::Font *font, std::string text, int fontSize);
+        void draw(sf::RenderWindow &window, sf::Color color);
         sf::RectangleShape getShape() const;
 };
 

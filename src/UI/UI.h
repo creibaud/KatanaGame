@@ -17,7 +17,7 @@ class UI {
     
     public:
         UI(sf::Font *font);
-        void init();
+        void init(sf::Image *image1, sf::Image *image2);
         void start();
         ~UI();
 };

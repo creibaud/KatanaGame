@@ -9,61 +9,85 @@ UI::UI(sf::Font *font)
     this->game = new Game();
 }
 
-void UI::init() {
+void UI::init(sf::Image *image1, sf::Image *image2) {
     int nbPlayers;
 
     sf::Text *title = new sf::Text("Katana", *this->font, 200);
     title->setFillColor(sf::Color::Red);
     title->setPosition(SCREEN_WIDTH / 2 - title->getGlobalBounds().width / 2, 50);
 
-    Button *btn1 = new Button(sf::Vector2f(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 650), sf::Vector2f(300, 100), sf::Color::White, this->font, "4 Players", 25);
-    Button *btn2 = new Button(sf::Vector2f(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 500), sf::Vector2f(300, 100), sf::Color::White, this->font, "5 Players", 25);
-    Button *btn3 = new Button(sf::Vector2f(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 350), sf::Vector2f(300, 100), sf::Color::White, this->font, "6 Players", 25);
-    Button *btn4 = new Button(sf::Vector2f(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 200), sf::Vector2f(300, 100), sf::Color::White, this->font, "7 Players", 25);
+    std::vector<Button*> *buttons = new std::vector<Button*>();
+
+    for (int i = 0; i < 4; i++) {
+        std::string text = std::to_string(4 + 3 - i) + " Players";
+        buttons->push_back(new Button(sf::Vector2f(SCREEN_WIDTH / 2 - 150, SCREEN_HEIGHT - 200 - 150 * i), sf::Vector2f(300, 100), this->font, text, 25));
+    }
+
+    sf::Texture *texture1 = new sf::Texture();
+    texture1->loadFromImage(*image1);
+
+    sf::Texture *texture2 = new sf::Texture();
+    texture2->loadFromImage(*image2);
+
+    sf::Sprite *sprite1 = new sf::Sprite();
+    sprite1->setTexture(*texture1);
+    sprite1->setScale(1.5, 1.5);
+    sprite1->setPosition(SCREEN_WIDTH - 484 * 1.5, SCREEN_HEIGHT - 515 * 1.5);
+
+    sf::Sprite *sprite2 = new sf::Sprite();
+    sprite2->setTexture(*texture2);
+    sprite2->setScale(2, 2);
+    sprite2->setPosition(100, SCREEN_HEIGHT / 2 - 175);
 
     while (this->window->isOpen()) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(*this->window);
         sf::Event event;
+
         while (this->window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 this->window->close();
             } else if (event.type == sf::Event::MouseButtonPressed) {
                 if (event.mouseButton.button == sf::Mouse::Left) {
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(*this->window);
-
-                    if (btn1->getShape().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-                        nbPlayers = 4;
-                        this->window->close();
-                    } else if (btn2->getShape().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-                        nbPlayers = 5;
-                        this->window->close();
-                    } else if (btn3->getShape().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-                        nbPlayers = 6;
-                        this->window->close();
-                    } else if (btn4->getShape().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-                        nbPlayers = 7;
-                        this->window->close();
+                    for (std::vector<Button*>::iterator it = buttons->begin(); it != buttons->end(); it++) {
+                        if ((*it)->getShape().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                            nbPlayers = 4 + 3 - std::distance(buttons->begin(), it);
+                            this->window->close();
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        this->window->clear();
+        this->window->clear(sf::Color::Black);
 
+        this->window->draw(*sprite1);
+        this->window->draw(*sprite2);
         this->window->draw(*title);
-        btn1->draw(*this->window);
-        btn2->draw(*this->window);
-        btn3->draw(*this->window);
-        btn4->draw(*this->window);
+        
+        for (std::vector<Button*>::iterator it = buttons->begin(); it != buttons->end(); it++) {
+            if ((*it)->getShape().getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                (*it)->draw(*this->window, sf::Color::Red);
+            } else {
+                (*it)->draw(*this->window, sf::Color::White);
+            }
+        }
 
         this->window->display();
     }
 
     delete title;
 
-    delete btn1;
-    delete btn2;
-    delete btn3;
-    delete btn4;
+    for (std::vector<Button*>::iterator it = buttons->begin(); it != buttons->end(); it++) {
+        delete *it;
+    }
+    delete buttons;
+
+    delete texture1;
+    delete texture2;
+
+    delete sprite1;
+    delete sprite2;
 
     this->game->setNbPlayers(nbPlayers);
     this->game->initRole();
