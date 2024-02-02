@@ -68,7 +68,7 @@ void Game::initCharacter() {
 void Game::initCard() {
     this->cards = new std::vector<Card*>();
 
-    int nbCopy[25] = {
+    int *nbCopy = new int[25] {
         NB_COPY_CRI_DE_GUERRE,
         NB_COPY_DAIMYO,
         NB_COPY_DIVERSION,
