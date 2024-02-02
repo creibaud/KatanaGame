@@ -196,6 +196,11 @@ Game::~Game() {
     }
     delete this->characters;
 
+    for (std::vector<Card*>::iterator it = this->cards->begin(); it != this->cards->end(); ++it) {
+        delete *it;
+    }
+    delete this->cards;
+
     for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); ++it) {
         delete *it;
     }
