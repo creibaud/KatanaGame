@@ -26,7 +26,10 @@ class Game {
 
         int getNbPlayers() const;
         int getIndexActualPlayer() const;
+        int getTurn() const;
         std::vector<Player*> *getPlayers() const;
+
+        void changePlayer();
 
         ~Game();
 };

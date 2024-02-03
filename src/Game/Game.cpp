@@ -259,6 +259,13 @@ std::vector<Player*> *Game::getPlayers() const {
     return this->players;
 }
 
+void Game::changePlayer() {
+    this->indexActualPlayer++;
+    if (this->indexActualPlayer == this->nbPlayers) {
+        this->indexActualPlayer = 0;
+    }
+}
+
 Game::~Game() {
     for (std::vector<Card*>::iterator it = this->cards->begin(); it != this->cards->end(); ++it) {
         delete *it;
