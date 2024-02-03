@@ -103,6 +103,8 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
         std::vector<Player*> *players = this->game->getPlayers();
         std::vector<sf::Sprite*> *spritePlayers = new std::vector<sf::Sprite*>();
 
+        int spriteShogunIndex = 0;
+
         if (this->game->getIndexActualPlayer() + 1 < this->game->getNbPlayers()) {
             for (int i = this->game->getIndexActualPlayer() + 1; i < this->game->getNbPlayers(); i++) {
                 sf::Texture *texture = new sf::Texture();
@@ -111,6 +113,7 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
                 sf::Sprite *sprite = new sf::Sprite();
                 sprite->setTexture(*texture);
                 spritePlayers->push_back(sprite);
+                spriteShogunIndex++;
             }
 
             for (int i = 0; i < this->game->getIndexActualPlayer(); i++) {
@@ -130,6 +133,12 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
                 sprite->setTexture(*texture);
                 spritePlayers->push_back(sprite);
             }
+
+            spriteShogunIndex = 0;
+        }
+
+        if (players->at(this->game->getIndexActualPlayer())->getRole()->getType() == RoleType::SHOGUN) {
+            spriteShogunIndex = -1;
         }
 
         sf::Texture *characterTexture = new sf::Texture();
@@ -209,7 +218,7 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
             }
         }
 
-        this->window->clear();
+        this->window->clear(sf::Color::Black);
 
         for (std::vector<sf::Sprite*>::iterator it = spritePlayers->begin(); it != spritePlayers->end(); it++) {
             this->window->draw(*(*it));
@@ -232,6 +241,23 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
         }
 
         this->window->draw(*characterSprite);
+
+        if (spriteShogunIndex != -1) {
+            sf::CircleShape *circleShapeShogunPlayer = new sf::CircleShape();
+            circleShapeShogunPlayer->setRadius(20);
+            circleShapeShogunPlayer->setFillColor(sf::Color::Red);
+            circleShapeShogunPlayer->setPosition(spritePlayers->at(spriteShogunIndex)->getPosition().x - 20, spritePlayers->at(spriteShogunIndex)->getPosition().y - 20);
+
+            sf::Text *textShogunPlayer = new sf::Text("S", *this->font, 25);
+            textShogunPlayer->setFillColor(sf::Color::White);
+            textShogunPlayer->setPosition(circleShapeShogunPlayer->getPosition().x + circleShapeShogunPlayer->getRadius() - textShogunPlayer->getGlobalBounds().width / 2, circleShapeShogunPlayer->getPosition().y + circleShapeShogunPlayer->getRadius() - 3 * textShogunPlayer->getGlobalBounds().height / 4 - 1);
+            
+            this->window->draw(*circleShapeShogunPlayer);
+            this->window->draw(*textShogunPlayer);
+
+            delete circleShapeShogunPlayer;
+            delete textShogunPlayer;
+        }
 
         this->window->display();
 
