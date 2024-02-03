@@ -11,19 +11,19 @@ int main() {
     bg2->loadFromFile("assets/images/bg2.png");
 
     sf::Image *backRole = new sf::Image();
-    backRole->loadFromFile("assets/images/backRole.png");
+    backRole->loadFromFile("assets/images/RoleBack.png");
 
     sf::Image *shogunImage = new sf::Image();
-    shogunImage->loadFromFile("assets/images/shogun_verso.png");
+    shogunImage->loadFromFile("assets/images/Shogun.png");
 
     sf::Image *samuraiImage = new sf::Image();
-    samuraiImage->loadFromFile("assets/images/samurai_verso.png");
+    samuraiImage->loadFromFile("assets/images/Samurai.png");
 
     sf::Image *ninjaImage = new sf::Image();
-    ninjaImage->loadFromFile("assets/images/ninja_verso.png");
+    ninjaImage->loadFromFile("assets/images/Ninja.png");
 
     sf::Image *roninImage = new sf::Image();
-    roninImage->loadFromFile("assets/images/ronin_verso.png");
+    roninImage->loadFromFile("assets/images/Ronin.png");
 
     std::vector<sf::Image*> *roleImages = new std::vector<sf::Image*>();
     roleImages->push_back(shogunImage);
