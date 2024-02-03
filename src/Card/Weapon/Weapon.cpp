@@ -15,3 +15,7 @@ int Weapon::getDamage() const {
 int Weapon::getRange() const {
     return this->range;
 }
+
+int Weapon::getIndex() {
+    return static_cast<int>(this->weaponType) + 12;
+}

@@ -17,6 +17,7 @@ class Permanent : public Card {
     public:
         Permanent(PermanentType permanentType);
         PermanentType getPermanentType() const;
+        int getIndex() override;
 };
 
 #endif // PERMANENT_H

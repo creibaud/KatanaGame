@@ -95,7 +95,7 @@ void UI::init(sf::Image *image1, sf::Image *image2) {
     this->game->initPlayer();
 }
 
-void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleImages, sf::Image *backRole) {
+void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*> *roleImages, sf::Image *backRole, std::vector<sf::Image*> *cardImages) {
     this->window->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Katana", sf::Style::Titlebar | sf::Style::Close);
     this->window->setFramerateLimit(FPS);
 
@@ -106,7 +106,7 @@ void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleIma
         if (this->game->getIndexActualPlayer() + 1 < this->game->getNbPlayers()) {
             for (int i = this->game->getIndexActualPlayer() + 1; i < this->game->getNbPlayers(); i++) {
                 sf::Texture *texture = new sf::Texture();
-                texture->loadFromImage(*images->at(players->at(i)->getCharacter()->getIndex()));
+                texture->loadFromImage(*characterImages->at(players->at(i)->getCharacter()->getIndex()));
 
                 sf::Sprite *sprite = new sf::Sprite();
                 sprite->setTexture(*texture);
@@ -115,7 +115,7 @@ void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleIma
 
             for (int i = 0; i < this->game->getIndexActualPlayer(); i++) {
                 sf::Texture *texture = new sf::Texture();
-                texture->loadFromImage(*images->at(players->at(i)->getCharacter()->getIndex()));
+                texture->loadFromImage(*characterImages->at(players->at(i)->getCharacter()->getIndex()));
 
                 sf::Sprite *sprite = new sf::Sprite();
                 sprite->setTexture(*texture);
@@ -124,7 +124,7 @@ void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleIma
         } else {
             for (int i = 0; i < this->game->getNbPlayers() - 1; i++) {
                 sf::Texture *texture = new sf::Texture();
-                texture->loadFromImage(*images->at(players->at(i)->getCharacter()->getIndex()));
+                texture->loadFromImage(*characterImages->at(players->at(i)->getCharacter()->getIndex()));
 
                 sf::Sprite *sprite = new sf::Sprite();
                 sprite->setTexture(*texture);
@@ -133,7 +133,7 @@ void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleIma
         }
 
         sf::Texture *characterTexture = new sf::Texture();
-        characterTexture->loadFromImage(*images->at(players->at(this->game->getIndexActualPlayer())->getCharacter()->getIndex()));
+        characterTexture->loadFromImage(*characterImages->at(players->at(this->game->getIndexActualPlayer())->getCharacter()->getIndex()));
 
         sf::Sprite *characterSprite = new sf::Sprite();
         characterSprite->setTexture(*characterTexture);
@@ -188,7 +188,7 @@ void UI::start(std::vector<sf::Image*> *images, std::vector<sf::Image*> *roleIma
 
         for (std::vector<Card*>::size_type i = 0; i < hand->size(); i++) {
             sf::Texture *texture = new sf::Texture();
-            texture->loadFromImage(*images->at(0));
+            texture->loadFromImage(*cardImages->at(hand->at(i)->getIndex()));
 
             sf::Sprite *sprite = new sf::Sprite();
             sprite->setTexture(*texture);

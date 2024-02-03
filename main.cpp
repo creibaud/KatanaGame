@@ -10,36 +10,108 @@ int main() {
     sf::Image *bg2 = new sf::Image();
     bg2->loadFromFile("assets/images/bg2.png");
 
+    std::string *rolePath = new std::string[4] {
+        "Shogun",
+        "Samurai",
+        "Ninja",
+        "Ronin"
+    };
+
+    std::string *cardPath = new std::string[25] {
+        "CriDeGuerre",
+        "Daimyo",
+        "Diversion",
+        "Geisha",
+        "Meditation",
+        "Parade",
+        "CeremonieDuThe",
+        "JuJitsu",
+        "AttaqueRapide",
+        "CodeDuBushido",
+        "Armure",
+        "Concentration",
+        "Nodachi",
+        "Naginata",
+        "Nagayari",
+        "Tanegashima",
+        "Daikyu",
+        "Bo",
+        "Kusarigama",
+        "Katana",
+        "Shuriken",
+        "Kanabo",
+        "Bokken",
+        "Kiseru",
+        "Wakizashi"
+    };
+
+    std::string *characterPath = new std::string[12] {
+        "Hanzo",
+        "Ushiwaka",
+        "Chiyome",
+        "Hideyoshi",
+        "Ginchyo",
+        "Goemon",
+        "Nobunaga",
+        "Tomoe",
+        "Ieyasu",
+        "Benkei",
+        "Musashi",
+        "Kojiro"
+    };
+
     sf::Image *backRole = new sf::Image();
     backRole->loadFromFile("assets/images/RoleBack.png");
 
-    sf::Image *shogunImage = new sf::Image();
-    shogunImage->loadFromFile("assets/images/Shogun.png");
+    std::vector<sf::Image*> *roleImages = new std::vector<sf::Image*>();;
+    for (int i = 0; i < 4; i++) {
+        sf::Image *image = new sf::Image();
+        image->loadFromFile("assets/images/roles/" + rolePath[i] + ".png");
+        roleImages->push_back(image);
+    }
 
-    sf::Image *samuraiImage = new sf::Image();
-    samuraiImage->loadFromFile("assets/images/Samurai.png");
+    std::vector<sf::Image*> *cardImages = new std::vector<sf::Image*>();
+    for (int i = 0; i < 25; i++) {
+        sf::Image *image = new sf::Image();
+        image->loadFromFile("assets/images/cards/" + cardPath[i] + ".png");
+        cardImages->push_back(image);
+    }
 
-    sf::Image *ninjaImage = new sf::Image();
-    ninjaImage->loadFromFile("assets/images/Ninja.png");
-
-    sf::Image *roninImage = new sf::Image();
-    roninImage->loadFromFile("assets/images/Ronin.png");
-
-    std::vector<sf::Image*> *roleImages = new std::vector<sf::Image*>();
-    roleImages->push_back(shogunImage);
-    roleImages->push_back(samuraiImage);
-    roleImages->push_back(ninjaImage);
-    roleImages->push_back(roninImage);
-
-    std::vector<sf::Image*> *images = new std::vector<sf::Image*>();
+    std::vector<sf::Image*> *characterImages = new std::vector<sf::Image*>();;
     for (int i = 0; i < 12; i++) {
-        images->push_back(backRole);
+        sf::Image *image = new sf::Image();
+        image->loadFromFile("assets/images/characters/" + characterPath[i] + ".png");
+        characterImages->push_back(image);
     }
 
     UI *ui = new UI(font);
     ui->init(bg1, bg2);
-    ui->start(images, roleImages, backRole);
+    ui->start(characterImages, roleImages, backRole, cardImages);
     delete ui;
+
+    delete bg1;
+    delete bg2;
+
+    delete[] rolePath;
+    delete[] cardPath;
+    delete[] characterPath;
+
+    delete backRole;
+
+    for (int i = 0; i < 4; i++) {
+        delete roleImages->at(i);
+    }
+    delete roleImages;
+
+    for (int i = 0; i < 25; i++) {
+        delete cardImages->at(i);
+    }
+    delete cardImages;
+
+    for (int i = 0; i < 12; i++) {
+        delete characterImages->at(i);
+    }
+    delete characterImages;
 
     return 0;
 }

@@ -21,6 +21,7 @@ class Action : public Card {
     public:
         Action(ActionType actionType);
         ActionType getActionType() const;
+        int getIndex() override;
 };
 
 #endif // ACTION_H

@@ -7,3 +7,7 @@ Action::Action(ActionType actionType)
 ActionType Action::getActionType() const {
     return this->actionType;
 }
+
+int Action::getIndex() {
+    return static_cast<int>(this->actionType);
+}

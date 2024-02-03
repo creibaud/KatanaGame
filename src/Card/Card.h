@@ -14,6 +14,8 @@ class Card {
     public:
         Card(CardType type);
         CardType getType() const;
+        virtual int getIndex();
+        virtual ~Card();
 };
 
 #endif // CARD_H

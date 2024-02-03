@@ -7,3 +7,9 @@ Card::Card(CardType type)
 CardType Card::getType() const {
     return this->type;
 }
+
+int Card::getIndex() {
+    return 0;
+}
+
+Card::~Card() {}

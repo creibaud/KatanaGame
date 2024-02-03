@@ -30,6 +30,7 @@ class Weapon : public Card {
         WeaponType getWeaponType() const;
         int getDamage() const;
         int getRange() const;
+        int getIndex() override;
 };
 
 #endif // WEAPON_H
