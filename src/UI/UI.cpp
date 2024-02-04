@@ -142,7 +142,7 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
 
             sf::Sprite *sprite = new sf::Sprite();
             sprite->setTexture(*texture);
-            sprite->setPosition(SCREEN_WIDTH / 2 - sprite->getTexture()->getSize().x / 2 - 5, SCREEN_HEIGHT / 2 - sprite->getTexture()->getSize().y / 2 - i);
+            sprite->setPosition(SCREEN_WIDTH / 2 - sprite->getTexture()->getSize().x - 5, SCREEN_HEIGHT / 2 - sprite->getTexture()->getSize().y / 2 - i);
             spriteDiscards->push_back(sprite);
         }
 
