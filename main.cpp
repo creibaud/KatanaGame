@@ -69,6 +69,9 @@ int main() {
     sf::Image *backRole = new sf::Image();
     backRole->loadFromFile("assets/images/RoleBack.png");
 
+    sf::Image *backCard = new sf::Image();
+    backCard->loadFromFile("assets/images/CardBack.png");
+
     std::vector<sf::Image*> *roleImages = new std::vector<sf::Image*>();;
     for (int i = 0; i < 4; i++) {
         sf::Image *image = new sf::Image();
@@ -92,7 +95,7 @@ int main() {
 
     UI *ui = new UI(font);
     ui->init(bg1, bg2);
-    ui->start(characterImages, roleImages, backRole, cardImages, HP, Honor);
+    ui->start(characterImages, roleImages, backRole, cardImages, backCard, HP, Honor);
     delete ui;
 
     delete bg1;

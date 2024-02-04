@@ -3,6 +3,7 @@
 Game::Game() {
     this->roles = new std::vector<Role*>();
     this->characters = new std::vector<Character*>();
+    this->discards = new std::vector<Card*>();
     this->players = new std::vector<Player*>();
     this->indexActualPlayer = 0;
 }
@@ -267,6 +268,14 @@ int Game::getIndexActualPlayer() const {
 
 std::vector<Player*> *Game::getPlayers() const {
     return this->players;
+}
+
+std::vector<Card*> *Game::getCards() const {
+    return this->cards;
+}
+
+std::vector<Card*> *Game::getDiscards() const {
+    return this->discards;
 }
 
 void Game::changePlayer() {

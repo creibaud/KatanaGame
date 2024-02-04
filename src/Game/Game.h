@@ -11,6 +11,7 @@ class Game {
         std::vector<Role*> *roles;
         std::vector<Character*> *characters;
         std::vector<Card*> *cards;
+        std::vector<Card*> *discards;
         std::vector<Player*> *players;
         int nbPlayers;
         int indexActualPlayer;
@@ -28,6 +29,8 @@ class Game {
         int getIndexActualPlayer() const;
         int getTurn() const;
         std::vector<Player*> *getPlayers() const;
+        std::vector<Card*> *getCards() const;
+        std::vector<Card*> *getDiscards() const;
 
         void changePlayer();
 

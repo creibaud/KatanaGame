@@ -95,9 +95,15 @@ void UI::init(sf::Image *image1, sf::Image *image2) {
     this->game->initPlayer();
 }
 
-void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*> *roleImages, sf::Image *backRole, std::vector<sf::Image*> *cardImages, sf::Image *HP, sf::Image *Honor) {
+void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*> *roleImages, sf::Image *backRole, std::vector<sf::Image*> *cardImages, sf::Image *backCard, sf::Image *HP, sf::Image *Honor) {
     this->window->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Katana", sf::Style::Titlebar | sf::Style::Close);
     this->window->setFramerateLimit(FPS);
+
+    sf::Texture *roleTextureBack = new sf::Texture();
+    roleTextureBack->loadFromImage(*backRole);
+
+    sf::Texture *backCardTexture = new sf::Texture();
+    backCardTexture->loadFromImage(*backCard);
 
     sf::Texture *textureHP = new sf::Texture();
     textureHP->loadFromImage(*HP);
@@ -108,6 +114,29 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
     while (this->window->isOpen()) {
         std::vector<Player*> *players = this->game->getPlayers();
         std::vector<sf::Sprite*> *spritePlayers = new std::vector<sf::Sprite*>();
+
+        std::vector<Card*> *cards = this->game->getCards();
+        std::vector<sf::Sprite*> *spriteCards = new std::vector<sf::Sprite*>();
+
+        std::vector<Card*> *discards = this->game->getDiscards();
+        std::vector<sf::Sprite*> *spriteDiscards = new std::vector<sf::Sprite*>();
+
+        for (std::vector<Card*>::size_type i = 0; i < cards->size(); i++) {
+            sf::Sprite *sprite = new sf::Sprite();
+            sprite->setTexture(*backCardTexture);
+            sprite->setPosition(SCREEN_WIDTH / 2 + 5, SCREEN_HEIGHT / 2 - sprite->getTexture()->getSize().y / 2 - i);
+            spriteCards->push_back(sprite);
+        }
+
+        for (std::vector<Card*>::size_type i = 0; i < discards->size(); i++) {
+            sf::Texture *texture = new sf::Texture();
+            texture->loadFromImage(*cardImages->at(discards->at(i)->getIndex()));
+
+            sf::Sprite *sprite = new sf::Sprite();
+            sprite->setTexture(*texture);
+            sprite->setPosition(SCREEN_WIDTH / 2 - sprite->getTexture()->getSize().x / 2 - 5, SCREEN_HEIGHT / 2 - sprite->getTexture()->getSize().y / 2 - i);
+            spriteDiscards->push_back(sprite);
+        }
 
         std::vector<sf::Text*> *textsHP = new std::vector<sf::Text*>();
         std::vector<sf::Text*> *textsHonorPoints = new std::vector<sf::Text*>();
@@ -221,9 +250,6 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
         roleSpriteFace->setTexture(*roleTextureFace);
         roleSpriteFace->setPosition(150, SCREEN_HEIGHT - 100 - roleSpriteFace->getTexture()->getSize().y);
 
-        sf::Texture *roleTextureBack = new sf::Texture();
-        roleTextureBack->loadFromImage(*backRole);
-
         sf::Sprite *roleSpriteBack = new sf::Sprite();
         roleSpriteBack->setTexture(*roleTextureBack);
         roleSpriteBack->setPosition(150, SCREEN_HEIGHT - 100 - roleSpriteBack->getTexture()->getSize().y);
@@ -294,6 +320,14 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
 
         this->window->clear(sf::Color::Black);
 
+        for (std::vector<sf::Sprite*>::iterator it = spriteCards->begin(); it != spriteCards->end(); it++) {
+            this->window->draw(*(*it));
+        }
+
+        for (std::vector<sf::Sprite*>::iterator it = spriteDiscards->begin(); it != spriteDiscards->end(); it++) {
+            this->window->draw(*(*it));
+        }
+
         for (std::vector<sf::Sprite*>::iterator it = spritePlayers->begin(); it != spritePlayers->end(); it++) {
             this->window->draw(*(*it));
         }
@@ -346,6 +380,16 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
 
         this->window->display();
 
+        for (std::vector<sf::Sprite*>::iterator it = spriteCards->begin(); it != spriteCards->end(); it++) {
+            delete *it;
+        }
+        delete spriteCards;
+
+        for (std::vector<sf::Sprite*>::iterator it = spriteDiscards->begin(); it != spriteDiscards->end(); it++) {
+            delete *it;
+        }
+        delete spriteDiscards;
+
         for (std::vector<sf::Sprite*>::iterator it = spritePlayers->begin(); it != spritePlayers->end(); it++) {
             delete *it;
         }
@@ -357,7 +401,6 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
         delete spriteHand;
 
         delete roleTextureFace;
-        delete roleTextureBack;
         delete roleSpriteFace;
         delete roleSpriteBack;
         delete characterTexture;
@@ -389,6 +432,8 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
         delete spriteActualPlayerHonorPoints;
     }
 
+    delete roleTextureBack;
+    delete backCardTexture;
     delete textureHP;
     delete textureHonorPoints;
 }
