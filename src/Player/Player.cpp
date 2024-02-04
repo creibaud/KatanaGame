@@ -26,6 +26,10 @@ void Player::recover() {
     }
 }
 
+bool Player::isDown() const {
+    return this->HP <= 0 || this->hand->size() <= 0;
+}
+
 Player::~Player() {
     delete this->role;
     delete this->character;

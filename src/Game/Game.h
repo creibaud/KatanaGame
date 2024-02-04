@@ -15,6 +15,7 @@ class Game {
         std::vector<Player*> *players;
         int nbPlayers;
         int indexActualPlayer;
+        int indexPlayerAttacked;
 
     public:
         Game();
@@ -27,6 +28,7 @@ class Game {
 
         int getNbPlayers() const;
         int getIndexActualPlayer() const;
+        int getIndexPlayerAttacked() const;
         int getTurn() const;
         std::vector<Player*> *getPlayers() const;
         std::vector<Card*> *getCards() const;
@@ -34,7 +36,10 @@ class Game {
 
         void recover();
         void pick();
-        void discard(Card* card);
+        bool attack(Weapon *card, Player *player);
+        int calculateDistance(Player *player);
+        bool canBlock(Player *player);
+        void discard(Player *player, Card* card);
         void changePlayer();
 
         ~Game();

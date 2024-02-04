@@ -10,8 +10,10 @@ class Button {
 
     public:
         Button(sf::Vector2f position, sf::Vector2f size, sf::Font *font, std::string text, int fontSize);
-        void draw(sf::RenderWindow &window, sf::Color color);
         sf::RectangleShape getShape() const;
+        bool isHovered(sf::RenderWindow &window) const;
+        bool isClicked(sf::RenderWindow &window) const;
+        void draw(sf::RenderWindow &window);
 };
 
 #endif // BUTTON_H

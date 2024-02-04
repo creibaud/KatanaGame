@@ -4,11 +4,11 @@ int main() {
     sf::Font *font = new sf::Font();
     font->loadFromFile("assets/fonts/aAbsoluteEmpire.ttf");
 
-    sf::Image *bg1 = new sf::Image();
-    bg1->loadFromFile("assets/images/bg1.png");
+    sf::Image *rightImage = new sf::Image();
+    rightImage->loadFromFile("assets/images/bg1.png");
 
-    sf::Image *bg2 = new sf::Image();
-    bg2->loadFromFile("assets/images/bg2.png");
+    sf::Image *leftImage = new sf::Image();
+    leftImage->loadFromFile("assets/images/bg2.png");
 
     sf::Image *HP = new sf::Image();
     HP->loadFromFile("assets/images/HP.png");
@@ -94,34 +94,33 @@ int main() {
     }
 
     UI *ui = new UI(font);
-    ui->init(bg1, bg2);
-    ui->start(characterImages, roleImages, backRole, cardImages, backCard, HP, Honor);
+    ui->menu(leftImage, rightImage);
+    ui->start();
     delete ui;
 
-    delete bg1;
-    delete bg2;
-
+    delete font;
+    delete rightImage;
+    delete leftImage;
     delete HP;
     delete Honor;
-
     delete[] rolePath;
     delete[] cardPath;
     delete[] characterPath;
-
     delete backRole;
+    delete backCard;
 
-    for (int i = 0; i < 4; i++) {
-        delete roleImages->at(i);
+    for (std::vector<sf::Image*>::iterator it = roleImages->begin(); it != roleImages->end(); it++) {
+        delete *it;
     }
     delete roleImages;
 
-    for (int i = 0; i < 25; i++) {
-        delete cardImages->at(i);
+    for (std::vector<sf::Image*>::iterator it = cardImages->begin(); it != cardImages->end(); it++) {
+        delete *it;
     }
     delete cardImages;
-
-    for (int i = 0; i < 12; i++) {
-        delete characterImages->at(i);
+    
+    for (std::vector<sf::Image*>::iterator it = characterImages->begin(); it != characterImages->end(); it++) {
+        delete *it;
     }
     delete characterImages;
 

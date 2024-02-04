@@ -3,9 +3,11 @@
 Game::Game() {
     this->roles = new std::vector<Role*>();
     this->characters = new std::vector<Character*>();
+    this->cards = new std::vector<Card*>();
     this->discards = new std::vector<Card*>();
     this->players = new std::vector<Player*>();
     this->indexActualPlayer = 0;
+    this->indexPlayerAttacked = -1;
 }
 
 void Game::initRole() {
@@ -72,8 +74,6 @@ void Game::initCharacter() {
 }
 
 void Game::initCard() {
-    this->cards = new std::vector<Card*>();
-
     int *nbCopy = new int[25] {
         NB_COPY_CRI_DE_GUERRE,
         NB_COPY_DAIMYO,
@@ -266,6 +266,10 @@ int Game::getIndexActualPlayer() const {
     return this->indexActualPlayer;
 }
 
+int Game::getIndexPlayerAttacked() const {
+    return this->indexPlayerAttacked;
+}
+
 std::vector<Player*> *Game::getPlayers() const {
     return this->players;
 }
@@ -289,9 +293,50 @@ void Game::pick() {
     }
 }
 
-void Game::discard(Card* card) {
+bool Game::attack(Weapon *card, Player *player) {
+    int range = card->getRange();
+
+    if (this->calculateDistance(player) <= range) {
+        this->indexPlayerAttacked = std::find(this->players->begin(), this->players->end(), player) - this->players->begin();
+        return true;
+    } else {
+        this->indexPlayerAttacked = -1;
+        return false;
+    }
+}
+
+int Game::calculateDistance(Player *player) {
+    int indexPlayer = std::find(this->players->begin(), this->players->end(), player) - this->players->begin();
+
+    if (indexPlayer < this->indexActualPlayer) {
+        return std::min(this->indexActualPlayer - indexPlayer, this->nbPlayers - this->indexActualPlayer + indexPlayer);
+    } else {
+        return std::min(indexPlayer - this->indexActualPlayer, this->nbPlayers - indexPlayer + this->indexActualPlayer);
+    }
+}
+
+bool Game::canBlock(Player *player) {
+    if (this->indexPlayerAttacked == -1) {
+        return false;
+    }
+
+    for (std::vector<Card*>::iterator it = player->getHand()->begin(); it != player->getHand()->end(); ++it) {
+        if ((*it)->getType() == CardType::ACTION) {
+            Action *action = dynamic_cast<Action*>(*it);
+            if (action->getActionType() == ActionType::PARADE) {
+                delete action;
+                return true;
+            }
+            delete action;
+        }
+    }
+
+    return false;
+}
+
+void Game::discard(Player *player, Card* card) {
     this->discards->push_back(card);
-    this->players->at(this->indexActualPlayer)->getHand()->erase(std::remove(this->players->at(this->indexActualPlayer)->getHand()->begin(), this->players->at(this->indexActualPlayer)->getHand()->end(), card), this->players->at(this->indexActualPlayer)->getHand()->end());
+    player->getHand()->erase(std::remove(player->getHand()->begin(), player->getHand()->end(), card), player->getHand()->end());
 }
 
 void Game::changePlayer() {
@@ -308,6 +353,11 @@ Game::~Game() {
         delete *it;
     }
     delete this->cards;
+
+    for (std::vector<Card*>::iterator it = this->discards->begin(); it != this->discards->end(); ++it) {
+        delete *it;
+    }
+    delete this->discards;
 
     for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); ++it) {
         delete *it;

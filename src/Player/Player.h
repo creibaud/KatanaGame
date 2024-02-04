@@ -22,6 +22,8 @@ class Player {
         Character* getCharacter() const;
         std::vector<Card*>* getHand() const;
 
+        bool isDown() const;
+
         void recover();
         ~Player();
 };
