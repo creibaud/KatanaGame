@@ -5,6 +5,7 @@ Player::Player(Role *role, Character *character)
     this->hand = new std::vector<Card*>();
     this->HP = character->getHP();
     this->honorPoints = 0;
+    this->asAttacked = false;
 }
 
 Role* Player::getRole() const {
@@ -17,6 +18,12 @@ Character* Player::getCharacter() const {
 
 std::vector<Card*>* Player::getHand() const {
     return this->hand;
+}
+
+void Player::recover() {
+    if (this->HP <= 0) {
+        this->HP = this->character->getHP();
+    }
 }
 
 Player::~Player() {

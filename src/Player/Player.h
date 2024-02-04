@@ -15,11 +15,14 @@ class Player {
     public:
         int HP;
         int honorPoints;
+        bool asAttacked;
         
         Player(Role *role, Character *character);
         Role* getRole() const;
         Character* getCharacter() const;
         std::vector<Card*>* getHand() const;
+
+        void recover();
         ~Player();
 };
 

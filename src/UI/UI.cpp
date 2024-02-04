@@ -111,7 +111,15 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
     sf::Texture *textureHonorPoints = new sf::Texture();
     textureHonorPoints->loadFromImage(*Honor);
 
+    int oldActualPlayer = this->game->getIndexActualPlayer();
+    bool playing = true;
+    bool discarding = false;
     while (this->window->isOpen()) {
+        if (oldActualPlayer != this->game->getIndexActualPlayer()) {
+            playing = true;
+            discarding = false;
+        }
+
         std::vector<Player*> *players = this->game->getPlayers();
         std::vector<sf::Sprite*> *spritePlayers = new std::vector<sf::Sprite*>();
 
@@ -314,6 +322,23 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
             } else if (event.type == sf::Event::KeyPressed) {
                 if (event.key.code == sf::Keyboard::A) {
                     this->game->changePlayer();
+                } else if (event.key.code == sf::Keyboard::D) {
+                    discarding = true;
+                    playing = false;
+                }
+            }
+
+            for (std::vector<sf::Sprite*>::size_type i = 0; i < spriteHand->size(); i++) {
+                if (event.type == sf::Event::MouseButtonPressed) {
+                    if (event.mouseButton.button == sf::Mouse::Left) {
+                        if (spriteHand->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                            if (playing) {
+                                this->game->discard(hand->at(i));
+                            } else if (discarding && hand->size() > 7) {
+                                this->game->discard(hand->at(i));
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -32,6 +32,9 @@ class Game {
         std::vector<Card*> *getCards() const;
         std::vector<Card*> *getDiscards() const;
 
+        void recover();
+        void pick();
+        void discard(Card* card);
         void changePlayer();
 
         ~Game();

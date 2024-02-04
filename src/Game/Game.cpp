@@ -278,11 +278,29 @@ std::vector<Card*> *Game::getDiscards() const {
     return this->discards;
 }
 
+void Game::recover() {
+    this->players->at(this->indexActualPlayer)->recover();
+}
+
+void Game::pick() {
+    for (int i = 0; i < 2; i++) {
+        this->players->at(this->indexActualPlayer)->getHand()->push_back(this->cards->back());
+        this->cards->pop_back();
+    }
+}
+
+void Game::discard(Card* card) {
+    this->discards->push_back(card);
+    this->players->at(this->indexActualPlayer)->getHand()->erase(std::remove(this->players->at(this->indexActualPlayer)->getHand()->begin(), this->players->at(this->indexActualPlayer)->getHand()->end(), card), this->players->at(this->indexActualPlayer)->getHand()->end());
+}
+
 void Game::changePlayer() {
     this->indexActualPlayer++;
     if (this->indexActualPlayer == this->nbPlayers) {
         this->indexActualPlayer = 0;
     }
+    this->recover();
+    this->pick();
 }
 
 Game::~Game() {
