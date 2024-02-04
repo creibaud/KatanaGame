@@ -10,6 +10,12 @@ int main() {
     sf::Image *bg2 = new sf::Image();
     bg2->loadFromFile("assets/images/bg2.png");
 
+    sf::Image *HP = new sf::Image();
+    HP->loadFromFile("assets/images/HP.png");
+
+    sf::Image *Honor = new sf::Image();
+    Honor->loadFromFile("assets/images/Honor.png");
+
     std::string *rolePath = new std::string[4] {
         "Shogun",
         "Samurai",
@@ -86,11 +92,14 @@ int main() {
 
     UI *ui = new UI(font);
     ui->init(bg1, bg2);
-    ui->start(characterImages, roleImages, backRole, cardImages);
+    ui->start(characterImages, roleImages, backRole, cardImages, HP, Honor);
     delete ui;
 
     delete bg1;
     delete bg2;
+
+    delete HP;
+    delete Honor;
 
     delete[] rolePath;
     delete[] cardPath;

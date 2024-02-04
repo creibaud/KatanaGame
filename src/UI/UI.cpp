@@ -95,13 +95,22 @@ void UI::init(sf::Image *image1, sf::Image *image2) {
     this->game->initPlayer();
 }
 
-void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*> *roleImages, sf::Image *backRole, std::vector<sf::Image*> *cardImages) {
+void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*> *roleImages, sf::Image *backRole, std::vector<sf::Image*> *cardImages, sf::Image *HP, sf::Image *Honor) {
     this->window->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Katana", sf::Style::Titlebar | sf::Style::Close);
     this->window->setFramerateLimit(FPS);
+
+    sf::Texture *textureHP = new sf::Texture();
+    textureHP->loadFromImage(*HP);
+
+    sf::Texture *textureHonorPoints = new sf::Texture();
+    textureHonorPoints->loadFromImage(*Honor);
 
     while (this->window->isOpen()) {
         std::vector<Player*> *players = this->game->getPlayers();
         std::vector<sf::Sprite*> *spritePlayers = new std::vector<sf::Sprite*>();
+
+        std::vector<sf::Text*> *textsHP = new std::vector<sf::Text*>();
+        std::vector<sf::Text*> *textsHonorPoints = new std::vector<sf::Text*>();
 
         int spriteShogunIndex = 0;
 
@@ -109,6 +118,14 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
             for (int i = this->game->getIndexActualPlayer() + 1; i < this->game->getNbPlayers(); i++) {
                 sf::Texture *texture = new sf::Texture();
                 texture->loadFromImage(*characterImages->at(players->at(i)->getCharacter()->getIndex()));
+
+                sf::Text *textHP = new sf::Text(std::to_string(players->at(i)->HP), *this->font, 20);
+                textHP->setFillColor(sf::Color::White);
+                textsHP->push_back(textHP);
+
+                sf::Text *textHonorPoints = new sf::Text(std::to_string(players->at(i)->honorPoints), *this->font, 20);
+                textHonorPoints->setFillColor(sf::Color::White);
+                textsHonorPoints->push_back(textHonorPoints);
 
                 sf::Sprite *sprite = new sf::Sprite();
                 sprite->setTexture(*texture);
@@ -120,6 +137,14 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
                 sf::Texture *texture = new sf::Texture();
                 texture->loadFromImage(*characterImages->at(players->at(i)->getCharacter()->getIndex()));
 
+                sf::Text *textHP = new sf::Text(std::to_string(players->at(i)->HP), *this->font, 20);
+                textHP->setFillColor(sf::Color::White);
+                textsHP->push_back(textHP);
+
+                sf::Text *textHonorPoints = new sf::Text(std::to_string(players->at(i)->honorPoints), *this->font, 20);
+                textHonorPoints->setFillColor(sf::Color::White);
+                textsHonorPoints->push_back(textHonorPoints);
+
                 sf::Sprite *sprite = new sf::Sprite();
                 sprite->setTexture(*texture);
                 spritePlayers->push_back(sprite);
@@ -128,6 +153,14 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
             for (int i = 0; i < this->game->getNbPlayers() - 1; i++) {
                 sf::Texture *texture = new sf::Texture();
                 texture->loadFromImage(*characterImages->at(players->at(i)->getCharacter()->getIndex()));
+
+                sf::Text *textHP = new sf::Text(std::to_string(players->at(i)->HP), *this->font, 20);
+                textHP->setFillColor(sf::Color::White);
+                textsHP->push_back(textHP);
+
+                sf::Text *textHonorPoints = new sf::Text(std::to_string(players->at(i)->honorPoints), *this->font, 20);
+                textHonorPoints->setFillColor(sf::Color::White);
+                textsHonorPoints->push_back(textHonorPoints);
 
                 sf::Sprite *sprite = new sf::Sprite();
                 sprite->setTexture(*texture);
@@ -205,6 +238,27 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
             spriteHand->push_back(sprite);
         }
 
+        std::vector<sf::Sprite*> *spritesHP = new std::vector<sf::Sprite*>();
+        std::vector<sf::Sprite*> *spritesHonorPoints = new std::vector<sf::Sprite*>();
+
+        for (std::vector<sf::Sprite*>::size_type i = 0; i < spritePlayers->size(); i++) {
+            sf::Sprite *spriteHP = new sf::Sprite();
+            spriteHP->setTexture(*textureHP);
+            spriteHP->setScale(0.5, 0.5);
+            spriteHP->setPosition(spritePlayers->at(i)->getPosition().x + textsHP->at(i)->getGlobalBounds().width + 25, spritePlayers->at(i)->getPosition().y - 2 * spriteHP->getTexture()->getSize().y / 3 - 5);
+            spritesHP->push_back(spriteHP);
+
+            textsHP->at(i)->setPosition(spritePlayers->at(i)->getPosition().x + 20, spritePlayers->at(i)->getPosition().y - textsHP->at(i)->getGlobalBounds().height - spriteHP->getTexture()->getSize().y / 2);
+
+            sf::Sprite *spriteHonorPoints = new sf::Sprite();
+            spriteHonorPoints->setTexture(*textureHonorPoints);
+            spriteHonorPoints->setScale(0.5, 0.5);
+            spriteHonorPoints->setPosition(spriteHP->getPosition().x + textureHP->getSize().x * 0.5 + 10 + textsHonorPoints->at(i)->getGlobalBounds().width + 5, spritePlayers->at(i)->getPosition().y - 2 * spriteHonorPoints->getTexture()->getSize().y / 3 - 5);
+            spritesHonorPoints->push_back(spriteHonorPoints);
+
+            textsHonorPoints->at(i)->setPosition(spriteHP->getPosition().x + textureHP->getSize().x * 0.5 + 10, spritePlayers->at(i)->getPosition().y - textsHP->at(i)->getGlobalBounds().height - spriteHP->getTexture()->getSize().y / 2);
+        }
+
         sf::Vector2i mousePos = sf::Mouse::getPosition(*this->window);
         sf::Event event;
 
@@ -222,6 +276,13 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
 
         for (std::vector<sf::Sprite*>::iterator it = spritePlayers->begin(); it != spritePlayers->end(); it++) {
             this->window->draw(*(*it));
+        }
+
+        for (std::vector<sf::Sprite*>::size_type i = 0; i < spritePlayers->size(); i++) {
+            this->window->draw(*textsHP->at(i));
+            this->window->draw(*spritesHP->at(i));
+            this->window->draw(*textsHonorPoints->at(i));
+            this->window->draw(*spritesHonorPoints->at(i));
         }
 
         for (std::vector<sf::Sprite*>::iterator it = spriteHand->begin(); it != spriteHand->end(); it++) {
@@ -277,7 +338,30 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
         delete roleSpriteBack;
         delete characterTexture;
         delete characterSprite;
+
+        for (std::vector<sf::Text*>::iterator it = textsHP->begin(); it != textsHP->end(); it++) {
+            delete *it;
+        }
+        delete textsHP;
+
+        for (std::vector<sf::Text*>::iterator it = textsHonorPoints->begin(); it != textsHonorPoints->end(); it++) {
+            delete *it;
+        }
+        delete textsHonorPoints;
+
+        for (std::vector<sf::Sprite*>::iterator it = spritesHP->begin(); it != spritesHP->end(); it++) {
+            delete *it;
+        }
+        delete spritesHP;
+
+        for (std::vector<sf::Sprite*>::iterator it = spritesHonorPoints->begin(); it != spritesHonorPoints->end(); it++) {
+            delete *it;
+        }
+        delete spritesHonorPoints;
     }
+
+    delete textureHP;
+    delete textureHonorPoints;
 }
 
 UI::~UI() {

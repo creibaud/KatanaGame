@@ -13,6 +13,9 @@ class Player {
         std::vector<Card*> *hand;
 
     public:
+        int HP;
+        int honorPoints;
+        
         Player(Role *role, Character *character);
         Role* getRole() const;
         Character* getCharacter() const;

@@ -12,8 +12,8 @@
 #define Nobunaga Character(CharacterType::NOBUNAGA, 5)
 #define Tomoe Character(CharacterType::TOMOE, 5)
 #define Ieyasu Character(CharacterType::IEYASU, 5)
-#define Benkei Character(CharacterType::BENKEI, 6)
-#define Musashi Character(CharacterType::MUSASHI, 6)
-#define Kojiro Character(CharacterType::KOJIRO, 6)
+#define Benkei Character(CharacterType::BENKEI, 5)
+#define Musashi Character(CharacterType::MUSASHI, 5)
+#define Kojiro Character(CharacterType::KOJIRO, 5)
 
 #endif // INIT_CHARACTER_H

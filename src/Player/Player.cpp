@@ -3,6 +3,8 @@
 Player::Player(Role *role, Character *character) 
     : role(role), character(character) {
     this->hand = new std::vector<Card*>();
+    this->HP = character->getHP();
+    this->honorPoints = 0;
 }
 
 Role* Player::getRole() const {

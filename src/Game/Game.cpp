@@ -241,6 +241,16 @@ void Game::initPlayer() {
             this->cards->pop_back();
         }
     }
+
+    for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); ++it) {
+        if ((*it)->getRole()->getType() == RoleType::SHOGUN) {
+            (*it)->honorPoints = 5;
+        } else if (this->nbPlayers < 6) {
+            (*it)->honorPoints = 3;
+        } else {
+            (*it)->honorPoints = 4;
+        }
+    }
 }
 
 void Game::setNbPlayers(int nbPlayers) {
