@@ -259,6 +259,26 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
             textsHonorPoints->at(i)->setPosition(spriteHP->getPosition().x + textureHP->getSize().x * 0.5 + 10, spritePlayers->at(i)->getPosition().y - textsHP->at(i)->getGlobalBounds().height - spriteHP->getTexture()->getSize().y / 2);
         }
 
+        sf::Text *textActualPlayerHP = new sf::Text(std::to_string(players->at(this->game->getIndexActualPlayer())->HP), *this->font, 20);
+        textActualPlayerHP->setFillColor(sf::Color::White);
+
+        sf::Text *textActualPlayerHonorPoints = new sf::Text(std::to_string(players->at(this->game->getIndexActualPlayer())->honorPoints), *this->font, 20);
+        textActualPlayerHonorPoints->setFillColor(sf::Color::White);
+
+        sf::Sprite *spriteActualPlayerHP = new sf::Sprite();
+        spriteActualPlayerHP->setTexture(*textureHP);
+        spriteActualPlayerHP->setScale(0.5, 0.5);
+        spriteActualPlayerHP->setPosition(characterSprite->getPosition().x + textActualPlayerHP->getGlobalBounds().width + 15, characterSprite->getPosition().y - 2 * spriteActualPlayerHP->getTexture()->getSize().y / 3 - 5);
+
+        textActualPlayerHP->setPosition(characterSprite->getPosition().x + 10, characterSprite->getPosition().y - textActualPlayerHP->getGlobalBounds().height - spriteActualPlayerHP->getTexture()->getSize().y / 2);
+
+        sf::Sprite *spriteActualPlayerHonorPoints = new sf::Sprite();
+        spriteActualPlayerHonorPoints->setTexture(*textureHonorPoints);
+        spriteActualPlayerHonorPoints->setScale(0.5, 0.5);
+        spriteActualPlayerHonorPoints->setPosition(spriteActualPlayerHP->getPosition().x + textureHP->getSize().x * 0.5 + 10 + textActualPlayerHonorPoints->getGlobalBounds().width + 5, characterSprite->getPosition().y - 2 * spriteActualPlayerHonorPoints->getTexture()->getSize().y / 3 - 5);
+
+        textActualPlayerHonorPoints->setPosition(spriteActualPlayerHP->getPosition().x + textureHP->getSize().x * 0.5 + 10, characterSprite->getPosition().y - textActualPlayerHP->getGlobalBounds().height - spriteActualPlayerHP->getTexture()->getSize().y / 2);
+
         sf::Vector2i mousePos = sf::Mouse::getPosition(*this->window);
         sf::Event event;
 
@@ -302,6 +322,10 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
         }
 
         this->window->draw(*characterSprite);
+        this->window->draw(*textActualPlayerHP);
+        this->window->draw(*spriteActualPlayerHP);
+        this->window->draw(*textActualPlayerHonorPoints);
+        this->window->draw(*spriteActualPlayerHonorPoints);
 
         if (spriteShogunIndex != -1) {
             sf::CircleShape *circleShapeShogunPlayer = new sf::CircleShape();
@@ -358,6 +382,11 @@ void UI::start(std::vector<sf::Image*> *characterImages, std::vector<sf::Image*>
             delete *it;
         }
         delete spritesHonorPoints;
+
+        delete textActualPlayerHP;
+        delete textActualPlayerHonorPoints;
+        delete spriteActualPlayerHP;
+        delete spriteActualPlayerHonorPoints;
     }
 
     delete textureHP;
