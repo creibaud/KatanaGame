@@ -41,6 +41,15 @@ class UI {
         std::vector<Card*> *stack;
         std::vector<Card*> *discardStack;
 
+        std::vector<std::string*> *logs;
+        std::vector<sf::Text*> *logsTexts;
+        sf::RectangleShape *logsBackground;
+        sf::Text *openLogsText;
+        sf::RectangleShape *openLogsBtn;
+        sf::Text *closeLogsText;
+        sf::RectangleShape *closeLogsBtn;
+        bool isOpenLogsText;
+
         Game *game;
         int nbPlayers;
         int spriteShogunIndex;
@@ -57,6 +66,9 @@ class UI {
         void setHandSprite();
         void setStackSprite();
         void setDiscardStackSprite();
+        void setLogsTexts();
+
+        void handleClickLogBtn(sf::Event event);
         ~UI();
 };
 

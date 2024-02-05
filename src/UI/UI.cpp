@@ -59,6 +59,18 @@ UI::UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *bac
     this->stackSprites = new std::vector<sf::Sprite*>();
     this->discardStackSprites = new std::vector<sf::Sprite*>();
 
+    this->logs = new std::vector<std::string*>();
+    this->logsTexts = new std::vector<sf::Text*>();
+    this->logsBackground = new sf::RectangleShape(sf::Vector2f(SCREEN_WIDTH / 3, SCREEN_HEIGHT));
+    this->logsBackground->setFillColor(sf::Color(202, 199, 190));
+    this->openLogsText = new sf::Text(">", *this->font, 75);
+    this->openLogsText->setFillColor(sf::Color::White);
+    this->openLogsBtn = new sf::RectangleShape(sf::Vector2f(75, 75));
+    this->closeLogsText = new sf::Text("<", *this->font, 75);
+    this->closeLogsText->setFillColor(sf::Color::White);
+    this->closeLogsBtn = new sf::RectangleShape(sf::Vector2f(75, 75));
+    this->isOpenLogsText = false;
+
     this->game = new Game();
     this->nbPlayers = 0;
 }
@@ -95,6 +107,8 @@ void UI::start() {
                     this->game->changePlayer();
                 }
             }
+
+            this->handleClickLogBtn(event);
         }
 
         this->window->clear(sf::Color::Black);
@@ -111,15 +125,16 @@ void UI::update() {
     this->hand = this->players->at(this->game->getIndexActualPlayer())->getHand();
     this->stack = this->game->getCards();
     this->discardStack = this->game->getDiscards();
+    this->logs = this->game->getLogs();
     this->setPlayersSprites();
     this->setActualPlayerSprite();
     this->setStackSprite();
     this->setDiscardStackSprite();
+    this->setLogsTexts();
 }
 
 void UI::display() {
     sf::Vector2i mousePos = sf::Mouse::getPosition(*this->window);
-
     for (std::vector<sf::Sprite*>::size_type i = 0; i < this->playersSprites->size(); i++) {
         this->window->draw(*this->playersSprites->at(i));
         this->window->draw(*this->HPSprites->at(i));
@@ -174,6 +189,16 @@ void UI::display() {
     for (std::vector<sf::Sprite*>::iterator it = this->discardStackSprites->begin(); it != this->discardStackSprites->end(); it++) {
         this->window->draw(*(*it));
     }
+
+    if (this->isOpenLogsText) {
+        this->window->draw(*this->logsBackground);
+        for (std::vector<sf::Text*>::iterator it = this->logsTexts->begin(); it != this->logsTexts->end(); it++) {
+            this->window->draw(*(*it));
+        }
+        this->window->draw(*this->openLogsText);
+    } else {
+        this->window->draw(*this->closeLogsText);
+    }
 }
 
 void UI::setPlayersSprites() {
@@ -214,30 +239,30 @@ void UI::setPlayersSprites() {
 
     switch (this->game->getNbPlayers()) {
         case 4:
-            this->playersSprites->at(0)->setPosition(200, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
-            this->playersSprites->at(1)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2, 100);
-            this->playersSprites->at(2)->setPosition(SCREEN_WIDTH - 200 - this->playersSprites->at(0)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
+            this->playersSprites->at(0)->setPosition(150, SCREEN_HEIGHT / 2 - this->playersSprites->at(0)->getTexture()->getSize().y / 2 - 50);
+            this->playersSprites->at(1)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(1)->getTexture()->getSize().x / 2, 100);
+            this->playersSprites->at(2)->setPosition(SCREEN_WIDTH - 215 - this->playersSprites->at(2)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
             break;
         case 5:
-            this->playersSprites->at(0)->setPosition(200, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
-            this->playersSprites->at(1)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2 - 250, 100);
-            this->playersSprites->at(2)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2 + 250, 100);
-            this->playersSprites->at(3)->setPosition(SCREEN_WIDTH - 200 - this->playersSprites->at(0)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
+            this->playersSprites->at(0)->setPosition(150, SCREEN_HEIGHT / 2 - this->playersSprites->at(0)->getTexture()->getSize().y / 2 - 50);
+            this->playersSprites->at(1)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(1)->getTexture()->getSize().x / 2 - 250, 100);
+            this->playersSprites->at(2)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(2)->getTexture()->getSize().x / 2 + 250, 100);
+            this->playersSprites->at(3)->setPosition(SCREEN_WIDTH - 215 - this->playersSprites->at(3)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
             break;
         case 6:
-            this->playersSprites->at(0)->setPosition(200, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
-            this->playersSprites->at(1)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2 - 375, 175);
-            this->playersSprites->at(2)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2, 100);
-            this->playersSprites->at(3)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2 + 375, 175);
-            this->playersSprites->at(4)->setPosition(SCREEN_WIDTH - 200 - this->playersSprites->at(0)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
+            this->playersSprites->at(0)->setPosition(150, SCREEN_HEIGHT / 2 - this->playersSprites->at(0)->getTexture()->getSize().y / 2 - 50);
+            this->playersSprites->at(1)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(1)->getTexture()->getSize().x / 2 - 375, 175);
+            this->playersSprites->at(2)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(2)->getTexture()->getSize().x / 2, 100);
+            this->playersSprites->at(3)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(3)->getTexture()->getSize().x / 2 + 375, 175);
+            this->playersSprites->at(4)->setPosition(SCREEN_WIDTH - 215 - this->playersSprites->at(4)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
             break;
         case 7:
-            this->playersSprites->at(0)->setPosition(225, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
-            this->playersSprites->at(1)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2 - 450, 175);
-            this->playersSprites->at(2)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2 - 150, 100);
-            this->playersSprites->at(3)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2 + 150, 100);
-            this->playersSprites->at(4)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(0)->getTexture()->getSize().x / 2 + 450, 175);
-            this->playersSprites->at(5)->setPosition(SCREEN_WIDTH - 225 - this->playersSprites->at(0)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
+            this->playersSprites->at(0)->setPosition(150, SCREEN_HEIGHT / 2 - this->playersSprites->at(0)->getTexture()->getSize().y / 2 - 50);
+            this->playersSprites->at(1)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(1)->getTexture()->getSize().x / 2 - 450, 175);
+            this->playersSprites->at(2)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(2)->getTexture()->getSize().x / 2 - 150, 100);
+            this->playersSprites->at(3)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(3)->getTexture()->getSize().x / 2 + 150, 100);
+            this->playersSprites->at(4)->setPosition(SCREEN_WIDTH / 2 - this->playersSprites->at(4)->getTexture()->getSize().x / 2 + 450, 175);
+            this->playersSprites->at(5)->setPosition(SCREEN_WIDTH - 215 - this->playersSprites->at(5)->getTexture()->getSize().x / 2, SCREEN_HEIGHT / 2 - this->playersSprites->at(1)->getTexture()->getSize().y / 2 - 50);
         default:
             break;
     }
@@ -360,6 +385,47 @@ void UI::setDiscardStackSprite() {
         sprite->setTexture(*this->cardTextures->at(index));
         sprite->setPosition(SCREEN_WIDTH / 2 - 5 - sprite->getTexture()->getSize().x, SCREEN_HEIGHT / 2 - sprite->getTexture()->getSize().y / 2 - i);
         this->discardStackSprites->push_back(sprite);
+    }
+}
+
+void UI::setLogsTexts() {
+    this->closeLogsText->setPosition(SCREEN_WIDTH - this->closeLogsText->getGlobalBounds().width - 25, SCREEN_HEIGHT / 2 - this->closeLogsText->getGlobalBounds().height / 2);
+    this->closeLogsBtn->setPosition(SCREEN_WIDTH - this->closeLogsText->getGlobalBounds().width - 45, SCREEN_HEIGHT / 2 - this->closeLogsText->getGlobalBounds().height / 2);
+    this->openLogsText->setPosition(2 * SCREEN_WIDTH / 3 - this->openLogsText->getGlobalBounds().width - 25, SCREEN_HEIGHT / 2 - this->openLogsText->getGlobalBounds().height / 2);
+    this->openLogsBtn->setPosition(2 * SCREEN_WIDTH / 3 - this->openLogsText->getGlobalBounds().width - 45, SCREEN_HEIGHT / 2 - this->openLogsText->getGlobalBounds().height / 2);
+
+    for (std::vector<sf::Text*>::iterator it = this->logsTexts->begin(); it != this->logsTexts->end(); it++) {
+        delete *it;
+    }
+    this->logsTexts->clear();
+
+    for (std::vector<std::string*>::size_type i = 0; i < this->logs->size(); i++) {
+        sf::Text *text = new sf::Text(*this->logs->at(i), *this->font, 20);
+        text->setFillColor(sf::Color::White);
+        text->setPosition(2 * SCREEN_WIDTH / 3, 10 + i * 20);
+        this->logsTexts->push_back(text);
+    }
+
+    if (this->isOpenLogsText) {
+        this->logsBackground->setPosition(2 * SCREEN_WIDTH / 3, 0);
+    } else {
+        this->logsBackground->setPosition(SCREEN_WIDTH, 0);
+    }
+}
+
+void UI::handleClickLogBtn(sf::Event event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            if (this->isOpenLogsText) {
+                if (this->openLogsBtn->getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
+                    this->isOpenLogsText = false;
+                }
+            } else {
+                if (this->closeLogsBtn->getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
+                    this->isOpenLogsText = true;
+                }
+            }
+        }
     }
 }
 

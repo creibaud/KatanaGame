@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <algorithm>
+#include <string>
 #include "../Player/Player.h"
 
 class Game {
@@ -13,6 +14,7 @@ class Game {
         std::vector<Card*> *cards;
         std::vector<Card*> *discards;
         std::vector<Player*> *players;
+        std::vector<std::string*> *logs;
         int nbPlayers;
         int indexActualPlayer;
         int indexPlayerAttacked;
@@ -33,6 +35,7 @@ class Game {
         std::vector<Player*> *getPlayers() const;
         std::vector<Card*> *getCards() const;
         std::vector<Card*> *getDiscards() const;
+        std::vector<std::string*> *getLogs() const;
 
         void recoverHP();
         void pick();

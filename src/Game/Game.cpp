@@ -6,6 +6,7 @@ Game::Game() {
     this->cards = new std::vector<Card*>();
     this->discards = new std::vector<Card*>();
     this->players = new std::vector<Player*>();
+    this->logs = new std::vector<std::string*>();
     this->indexActualPlayer = 0;
     this->indexPlayerAttacked = -1;
 }
@@ -282,6 +283,10 @@ std::vector<Card*> *Game::getDiscards() const {
     return this->discards;
 }
 
+std::vector<std::string*> *Game::getLogs() const {
+    return this->logs;
+}
+
 void Game::recoverHP() {
     this->players->at(this->indexActualPlayer)->recover();
 }
@@ -365,6 +370,10 @@ void Game::recoverCards() {
         this->cards->push_back(*it);
     }
     this->discards->clear();
+
+    for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); it++) {
+        (*it)->honorPoints -= 1;
+    }
 }
 
 Game::~Game() {
