@@ -11,16 +11,26 @@ class Player {
         Role *role;
         Character *character;
         std::vector<Card*> *hand;
+        std::vector<Permanent*> *permanentCardsPlayed;
+
+        int maxNbAttack;
 
     public:
         int HP;
         int honorPoints;
         bool asAttacked;
+        int nbAttack;
         
         Player(Role *role, Character *character);
+
         Role* getRole() const;
         Character* getCharacter() const;
         std::vector<Card*>* getHand() const;
+        std::vector<Permanent*>* getPermanentCardsPlayed() const;
+        int getMaxNbAttack() const;
+
+        int attackRapideFunction();
+        void concentrationFunction();
 
         bool isDown() const;
 

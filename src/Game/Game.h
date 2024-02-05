@@ -36,14 +36,20 @@ class Game {
         std::vector<Card*> *getDiscards() const;
         std::vector<std::string*> *getLogs() const;
 
+        void updateHonorPointsHP();
+
         void recoverHP();
-        void pick();
+        void pick(Player *player, int nbCard);
         bool attack(Weapon *card, Player *player);
         int calculateDistance(Player *player);
         bool canBlock(Player *player);
         void discard(Player *player, Card* card);
         void recoverCards();
         void changePlayer();
+
+        void criDeGuerreFunction();
+        void daimyoFunction();
+        void ceremonieDuTheFunction();
 
         ~Game();
 };

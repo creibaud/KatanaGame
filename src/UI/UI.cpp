@@ -81,6 +81,8 @@ UI::UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *bac
     this->nbPlayers = 0;
     this->indexSelectedCard = -1;
     this->indexSelectedPlayer = -1;
+
+    this->attackRapideNbDamage = 0;
 }
 
 void UI::menu(sf::Image *leftImage, sf::Image *rightImage) {
@@ -131,6 +133,7 @@ void UI::start() {
 
 void UI::update() {
     this->players = this->game->getPlayers();
+    this->game->updateHonorPointsHP();
     if (!this->blocking) {
         this->indexActualPlayer = this->game->getIndexActualPlayer();
     }
@@ -472,12 +475,92 @@ void UI::handleClickHandCard(sf::Event event) {
                     if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == -1) {
                         this->indexSelectedCard = i;
 
-                        if (this->isDiscarding && this->hand->at(i)->getType() != CardType::WEAPON) {
+                        if (this->hand->at(i)->getType() == CardType::WEAPON && this->players->at(this->indexActualPlayer)->nbAttack >= this->players->at(this->indexActualPlayer)->getMaxNbAttack()) {
+                            this->indexSelectedCard = -1;
+                            break;
+                        }
+
+                        if (this->isDiscarding) {
                             this->indexSelectedCard = -1;
                             this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
                             break;
                         } else if (!this->isDiscarding && this->hand->at(i)->getType() != CardType::WEAPON) {
                             this->indexSelectedCard = -1;
+                            
+                            switch (this->hand->at(i)->getType()) {
+                                case CardType::ACTION: {
+                                    Action *action = dynamic_cast<Action*>(this->hand->at(i));
+                                    switch (action->getActionType()) {
+                                        case ActionType::CRI_DE_GUERRE: {
+                                            this->game->criDeGuerreFunction();
+                                            this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
+                                            break;
+                                        }
+                                        case ActionType::DAIMYO: {
+                                            this->game->daimyoFunction();
+                                            this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
+                                            break;
+                                        }
+                                        case ActionType::DIVERSION: {
+                                            this->indexSelectedCard = i;
+                                            break;
+                                        }
+                                        case ActionType::GEISHA: {
+                                            break;
+                                        }
+                                        case ActionType::MEDITATION: {
+                                            break;
+                                        }
+                                        case ActionType::PARADE: {
+                                            break;
+                                        }
+                                        case ActionType::CEREMONIE_DU_THE: {
+                                            this->game->ceremonieDuTheFunction();
+                                            this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
+                                            break;
+                                        }
+                                        case ActionType::JU_JITSU: {
+                                            break;
+                                        }
+                                        default: {
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                                case CardType::PERMANENT: {
+                                    Permanent *permanent = dynamic_cast<Permanent*>(this->hand->at(i));
+                                    this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed()->push_back(permanent);
+                                    this->hand->erase(this->hand->begin() + i);
+
+                                    switch (permanent->getPermanentType()) {
+                                        case PermanentType::ATTAQUE_RAPIDE: {
+                                            this->attackRapideNbDamage = this->players->at(this->game->getIndexActualPlayer())->attackRapideFunction();
+                                            break;
+                                        }
+                                        case PermanentType::CODE_DU_BUSHIDO: {
+                                            break;
+                                        }
+                                        case PermanentType::ARMURE: {
+                                            break;
+                                        }
+                                        case PermanentType::CONCENTRATION: {
+                                            this->players->at(this->game->getIndexActualPlayer())->concentrationFunction();
+                                            break;
+                                        }
+                                        default: {
+                                            break;
+                                        }
+                                    }
+                                    break;
+                                }
+                                case CardType::WEAPON: {
+                                    break;
+                                }
+                                default: {
+                                    break;
+                                }
+                            }
                             break;
                         }
                     } else if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == static_cast<int>(i)) {
@@ -502,16 +585,34 @@ void UI::handleClickHandCard(sf::Event event) {
                     if (this->playersSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
                         this->indexSelectedPlayer = (i + this->indexActualPlayer + 1) % this->nbPlayers;
 
-                        Weapon *weapon = dynamic_cast<Weapon*>(this->hand->at(this->indexSelectedCard));
-                        if (weapon && this->game->attack(weapon, this->players->at(this->indexSelectedPlayer))) {
-                            this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
-                            
-                            this->indexActualPlayer = this->indexSelectedPlayer;
-                            if (this->game->canBlock(this->players->at(this->indexActualPlayer))) {
-                                this->blocking = true;
-                            } else {
-                                this->players->at(this->indexSelectedPlayer)->HP -= weapon->getDamage();
-                                this->blocking = false;
+                        if (this->hand->at(this->indexSelectedCard)->getType() == CardType::WEAPON) {
+                            Weapon *weapon = dynamic_cast<Weapon*>(this->hand->at(this->indexSelectedCard));
+                            if (weapon && this->game->attack(weapon, this->players->at(this->indexSelectedPlayer)) && this->players->at(this->indexActualPlayer)->nbAttack < this->players->at(this->indexActualPlayer)->getMaxNbAttack()) {
+                                this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
+                                
+                                this->players->at(this->indexActualPlayer)->nbAttack++;
+                                this->indexActualPlayer = this->indexSelectedPlayer;
+                                if (this->game->canBlock(this->players->at(this->indexActualPlayer))) {
+                                    this->blocking = true;
+                                } else {
+                                    this->players->at(this->indexSelectedPlayer)->HP -= weapon->getDamage() + this->attackRapideNbDamage;
+                                    this->blocking = false;
+                                }
+                            }
+                        } else if (this->hand->at(this->indexSelectedCard)->getType() == CardType::ACTION) {
+                            std::vector<Card*> *targetHand = this->players->at(this->indexSelectedPlayer)->getHand();
+
+                            std::random_device rd;
+                            std::mt19937 g(rd());
+
+                            if (!targetHand->empty() && !this->players->at(this->indexSelectedPlayer)->isDown()) {
+                                std::uniform_int_distribution<int> distribution(0, targetHand->size() - 1);
+                                int randomIndex = distribution(g);
+                                Card* randomCard = targetHand->at(randomIndex);
+
+                                targetHand->erase(targetHand->begin() + randomIndex);
+                                this->hand->push_back(randomCard);
+                                this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
                             }
                         }
 
@@ -530,7 +631,7 @@ void UI::handleClickPassParadeBtn(sf::Event event) {
         if (event.mouseButton.button == sf::Mouse::Left) {
             if (this->blocking && this->passParadeBtn->isClicked(*this->window)) {
                 Weapon *weapon = dynamic_cast<Weapon*>(this->discardStack->back());
-                this->players->at(this->indexActualPlayer)->HP -= weapon->getDamage();
+                this->players->at(this->indexActualPlayer)->HP -= weapon->getDamage() + this->attackRapideNbDamage;
                 this->blocking = false;
             }
         }

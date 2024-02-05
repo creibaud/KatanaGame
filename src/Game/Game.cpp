@@ -282,17 +282,29 @@ std::vector<std::string*> *Game::getLogs() const {
     return this->logs;
 }
 
+void Game::updateHonorPointsHP() {
+    for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); it++) {
+        if ((*it)->isDown()) {
+            (*it)->HP = 0;
+        }
+
+        if ((*it)->honorPoints <= 0) {
+            (*it)->honorPoints = 0;
+        }
+    }
+}
+
 void Game::recoverHP() {
     this->players->at(this->indexActualPlayer)->recover();
 }
 
-void Game::pick() {
-    for (int i = 0; i < 2; i++) {
+void Game::pick(Player *player, int nbCard) {
+    for (int i = 0; i < nbCard; i++) {
         if (this->cards->size() <= 0) {
             this->recoverCards();
         }
         
-        this->players->at(this->indexActualPlayer)->getHand()->push_back(this->cards->back());
+        player->getHand()->push_back(this->cards->back());
         this->cards->pop_back();
         std::string *log = new std::string("Le joueur a pioche une carte.");
         this->logs->push_back(log);
@@ -338,12 +350,13 @@ void Game::discard(Player *player, Card* card) {
 }
 
 void Game::changePlayer() {
+    this->players->at(this->indexActualPlayer)->nbAttack = 0;
     this->indexActualPlayer++;
     if (this->indexActualPlayer == this->nbPlayers) {
         this->indexActualPlayer = 0;
     }
     this->recoverHP();
-    this->pick();
+    this->pick(this->players->at(this->indexActualPlayer), 2);
 }
 
 void Game::recoverCards() {
@@ -358,6 +371,44 @@ void Game::recoverCards() {
 
     for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); it++) {
         (*it)->honorPoints -= 1;
+    }
+}
+
+void Game::criDeGuerreFunction() {
+    for (std::vector<Player*>::iterator it1 = this->players->begin(); it1 != this->players->end(); it1++) {
+        if (!(*it1)->isDown()) {
+            std::vector<Card*> *hand = (*it1)->getHand();
+
+            bool asDiscarded = false;
+            for (std::vector<Card*>::iterator it2 = hand->begin(); it2 != hand->end(); it2++) {
+                if ((*it2)->getType() == CardType::ACTION) {
+                    Action *action = dynamic_cast<Action*>(*it2);
+                    if (action->getActionType() == ActionType::PARADE) {
+                        this->discard(*it1, *it2);
+                        asDiscarded = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!asDiscarded) {
+                (*it1)->HP -= 1;
+            }
+        }
+    }
+}
+
+void Game::daimyoFunction() {
+    this->pick(this->players->at(this->indexActualPlayer), 2);
+}
+
+void Game::ceremonieDuTheFunction() {
+    for (std::vector<Player*>::size_type i = 0; i != this->players->size(); i++) {
+        if (static_cast<int>(i) == this->indexActualPlayer) {
+            this->pick(this->players->at(i), 3);
+        } else {
+            this->pick(this->players->at(i), 1);
+        }
     }
 }
 
