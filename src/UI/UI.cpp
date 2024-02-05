@@ -74,6 +74,7 @@ UI::UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *bac
     this->game = new Game();
     this->nbPlayers = 0;
     this->indexSelectedCard = -1;
+    this->indexSelectedPlayer = -1;
 }
 
 void UI::menu(sf::Image *leftImage, sf::Image *rightImage) {
@@ -445,12 +446,32 @@ void UI::handleClickHandCard(sf::Event event) {
             for (std::vector<sf::Sprite*>::size_type i = 0; i < this->actualPlayerCardSprites->size(); i++) {
                 if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == -1) {
                     this->indexSelectedCard = i;
-                    break;
-                }
 
-                if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == static_cast<int>(i)) {
+                    if (this->hand->at(i)->getType() != CardType::WEAPON) {
+                        this->indexSelectedCard = -1;
+                        this->game->discard(this->players->at(this->game->getIndexActualPlayer()), this->hand->at(i));
+                        break;
+                    }
+                } else if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == static_cast<int>(i)) {
                     this->indexSelectedCard = -1;
                     break;
+                }
+            }
+
+            if (this->indexSelectedCard != -1 && this->indexSelectedPlayer == -1) {
+                for (std::vector<sf::Sprite*>::size_type i = 0; i < this->playersSprites->size(); i++) {
+                    if (this->playersSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+                        this->indexSelectedPlayer = (i + this->game->getIndexActualPlayer() + 1) % this->nbPlayers;
+
+                        Weapon *weapon = dynamic_cast<Weapon*>(this->hand->at(this->indexSelectedCard));
+                        if (weapon && this->game->attack(weapon, this->players->at(this->indexSelectedPlayer))) {
+                            this->game->discard(this->players->at(this->game->getIndexActualPlayer()), this->hand->at(this->indexSelectedCard));
+                        }
+
+                        this->indexSelectedCard = -1;
+                        this->indexSelectedPlayer = -1;
+                        break;
+                    }
                 }
             }
         }

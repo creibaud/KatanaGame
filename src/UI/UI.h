@@ -54,6 +54,7 @@ class UI {
         int nbPlayers;
         int spriteShogunIndex;
         int indexSelectedCard;
+        int indexSelectedPlayer;
     
     public:
         UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *backRoleImage, sf::Image *backCardImage, std::vector<sf::Image*> *roleImages, std::vector<sf::Image*> *cardImages, std::vector<sf::Image*> *characterImages);
