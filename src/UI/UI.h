@@ -51,6 +51,8 @@ class UI {
         bool isOpenLogsText;
 
         Game *game;
+        int indexActualPlayer;
+        bool blocking;
         int nbPlayers;
         int spriteShogunIndex;
         int indexSelectedCard;

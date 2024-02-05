@@ -72,6 +72,7 @@ UI::UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *bac
     this->isOpenLogsText = false;
 
     this->game = new Game();
+    this->blocking = false;
     this->nbPlayers = 0;
     this->indexSelectedCard = -1;
     this->indexSelectedPlayer = -1;
@@ -126,7 +127,10 @@ void UI::start() {
 
 void UI::update() {
     this->players = this->game->getPlayers();
-    this->hand = this->players->at(this->game->getIndexActualPlayer())->getHand();
+    if (!this->blocking) {
+        this->indexActualPlayer = this->game->getIndexActualPlayer();
+    }
+    this->hand = this->players->at(this->indexActualPlayer)->getHand();
     this->stack = this->game->getCards();
     this->discardStack = this->game->getDiscards();
     this->logs = this->game->getLogs();
@@ -182,7 +186,7 @@ void UI::display() {
         delete textShogunPlayer;
     }
 
-    if (this->actualPlayerRoleSprite->getGlobalBounds().contains(mousePos.x, mousePos.y) || this->players->at(this->game->getIndexActualPlayer())->getRole()->getType() == RoleType::SHOGUN) {
+    if (this->actualPlayerRoleSprite->getGlobalBounds().contains(mousePos.x, mousePos.y) || this->players->at(this->indexActualPlayer)->getRole()->getType() == RoleType::SHOGUN) {
         this->window->draw(*this->actualPlayerRoleSprite);
     } else {
         this->window->draw(*this->backRoleSprite);
@@ -226,13 +230,13 @@ void UI::setPlayersSprites() {
     this->HonorTexts->clear();
 
     this->spriteShogunIndex = 0;
-    if (this->game->getIndexActualPlayer() + 1 < this->game->getNbPlayers()) {
-        for (int i = this->game->getIndexActualPlayer() + 1; i < this->game->getNbPlayers(); i++) {
+    if (this->indexActualPlayer + 1 < this->game->getNbPlayers()) {
+        for (int i = this->indexActualPlayer + 1; i < this->game->getNbPlayers(); i++) {
             this->setSpriteHonorCharactersHP(i);
             this->spriteShogunIndex++;
         }
 
-        for (int i = 0; i < this->game->getIndexActualPlayer(); i++) {
+        for (int i = 0; i < this->indexActualPlayer; i++) {
             this->setSpriteHonorCharactersHP(i);
         }
     } else {
@@ -243,7 +247,7 @@ void UI::setPlayersSprites() {
         this->spriteShogunIndex = 0;
     }
 
-    if (this->players->at(this->game->getIndexActualPlayer())->getRole()->getType() == RoleType::SHOGUN) {
+    if (this->players->at(this->indexActualPlayer)->getRole()->getType() == RoleType::SHOGUN) {
         this->spriteShogunIndex = -1;
     }
 
@@ -287,7 +291,7 @@ void UI::setPlayersSprites() {
 }
 
 void UI::setActualPlayerSprite() {
-    Player* player = this->game->getPlayers()->at(this->game->getIndexActualPlayer());
+    Player* player = this->game->getPlayers()->at(this->indexActualPlayer);
     int characterIndex = player->getCharacter()->getIndex();
     sf::Texture* texture = this->characterTextures->at(characterIndex);
     this->actualPlayerSprite->setTexture(*texture);
@@ -444,28 +448,47 @@ void UI::handleClickHandCard(sf::Event event) {
         if (event.mouseButton.button == sf::Mouse::Left) {
             sf::Vector2i mousePos = sf::Mouse::getPosition(*this->window);
             for (std::vector<sf::Sprite*>::size_type i = 0; i < this->actualPlayerCardSprites->size(); i++) {
-                if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == -1) {
-                    this->indexSelectedCard = i;
+                if (!this->blocking) {
+                    if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == -1) {
+                        this->indexSelectedCard = i;
 
-                    if (this->hand->at(i)->getType() != CardType::WEAPON) {
+                        if (this->hand->at(i)->getType() != CardType::WEAPON) {
+                            this->indexSelectedCard = -1;
+                            this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
+                            break;
+                        }
+                    } else if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == static_cast<int>(i)) {
                         this->indexSelectedCard = -1;
-                        this->game->discard(this->players->at(this->game->getIndexActualPlayer()), this->hand->at(i));
                         break;
                     }
-                } else if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == static_cast<int>(i)) {
-                    this->indexSelectedCard = -1;
-                    break;
+                } else {
+                    if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->hand->at(i)->getType() == CardType::ACTION) {
+                        Action *action = dynamic_cast<Action *>(this->hand->at(i));
+                        if (action && action->getActionType() == ActionType::PARADE) {
+                            this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
+                            this->blocking = false;
+                            this->indexActualPlayer = this->game->getIndexActualPlayer();
+                            break;
+                        }
+                    }
                 }
             }
 
-            if (this->indexSelectedCard != -1 && this->indexSelectedPlayer == -1) {
+            if (this->indexSelectedCard != -1 && this->indexSelectedPlayer == -1 && !this->blocking) {
                 for (std::vector<sf::Sprite*>::size_type i = 0; i < this->playersSprites->size(); i++) {
                     if (this->playersSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-                        this->indexSelectedPlayer = (i + this->game->getIndexActualPlayer() + 1) % this->nbPlayers;
+                        this->indexSelectedPlayer = (i + this->indexActualPlayer + 1) % this->nbPlayers;
 
                         Weapon *weapon = dynamic_cast<Weapon*>(this->hand->at(this->indexSelectedCard));
                         if (weapon && this->game->attack(weapon, this->players->at(this->indexSelectedPlayer))) {
-                            this->game->discard(this->players->at(this->game->getIndexActualPlayer()), this->hand->at(this->indexSelectedCard));
+                            this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
+                            
+                            this->indexActualPlayer = this->indexSelectedPlayer;
+                            if (this->game->canBlock(this->players->at(this->indexActualPlayer))) {
+                                this->blocking = true;
+                            } else {
+                                this->blocking = false;
+                            }
                         }
 
                         this->indexSelectedCard = -1;

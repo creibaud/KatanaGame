@@ -17,7 +17,6 @@ class Game {
         std::vector<std::string*> *logs;
         int nbPlayers;
         int indexActualPlayer;
-        int indexPlayerAttacked;
 
     public:
         Game();

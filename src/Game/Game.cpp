@@ -8,7 +8,6 @@ Game::Game() {
     this->players = new std::vector<Player*>();
     this->logs = new std::vector<std::string*>();
     this->indexActualPlayer = 0;
-    this->indexPlayerAttacked = -1;
 }
 
 void Game::initRole() {
@@ -267,10 +266,6 @@ int Game::getIndexActualPlayer() const {
     return this->indexActualPlayer;
 }
 
-int Game::getIndexPlayerAttacked() const {
-    return this->indexPlayerAttacked;
-}
-
 std::vector<Player*> *Game::getPlayers() const {
     return this->players;
 }
@@ -308,10 +303,8 @@ bool Game::attack(Weapon *card, Player *player) {
     int range = card->getRange();
 
     if (this->calculateDistance(player) <= range) {
-        this->indexPlayerAttacked = std::find(this->players->begin(), this->players->end(), player) - this->players->begin();
         return true;
     } else {
-        this->indexPlayerAttacked = -1;
         return false;
     }
 }
@@ -327,18 +320,12 @@ int Game::calculateDistance(Player *player) {
 }
 
 bool Game::canBlock(Player *player) {
-    if (this->indexPlayerAttacked == -1) {
-        return false;
-    }
-
-    for (std::vector<Card*>::iterator it = player->getHand()->begin(); it != player->getHand()->end(); ++it) {
+    for (std::vector<Card*>::iterator it = player->getHand()->begin(); it != player->getHand()->end(); it++) {
         if ((*it)->getType() == CardType::ACTION) {
             Action *action = dynamic_cast<Action*>(*it);
             if (action->getActionType() == ActionType::PARADE) {
-                delete action;
                 return true;
             }
-            delete action;
         }
     }
 
@@ -357,10 +344,6 @@ void Game::changePlayer() {
     }
     this->recoverHP();
     this->pick();
-
-    for (int i = 0; i < 2; i++) {
-        this->discard(this->players->at(this->indexActualPlayer), this->players->at(this->indexActualPlayer)->getHand()->back());
-    }
 }
 
 void Game::recoverCards() {
