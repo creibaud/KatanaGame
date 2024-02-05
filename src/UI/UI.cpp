@@ -90,6 +90,7 @@ void UI::menu(sf::Image *leftImage, sf::Image *rightImage) {
 void UI::start() {
     this->window->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Katana");
     this->window->setFramerateLimit(FPS);
+    this->window->setVerticalSyncEnabled(true);
 
     this->game->setNbPlayers(this->nbPlayers);
     this->game->initRole();
@@ -126,6 +127,7 @@ void UI::update() {
     this->stack = this->game->getCards();
     this->discardStack = this->game->getDiscards();
     this->logs = this->game->getLogs();
+
     this->setPlayersSprites();
     this->setActualPlayerSprite();
     this->setStackSprite();
@@ -192,6 +194,10 @@ void UI::display() {
 
     if (this->isOpenLogsText) {
         this->window->draw(*this->logsBackground);
+        for (std::vector<sf::Text*>::iterator it = this->logsTexts->begin(); it != this->logsTexts->end(); it++) {
+            this->window->draw(*(*it));
+        }
+
         for (std::vector<sf::Text*>::iterator it = this->logsTexts->begin(); it != this->logsTexts->end(); it++) {
             this->window->draw(*(*it));
         }
@@ -402,7 +408,7 @@ void UI::setLogsTexts() {
     for (std::vector<std::string*>::size_type i = 0; i < this->logs->size(); i++) {
         sf::Text *text = new sf::Text(*this->logs->at(i), *this->font, 20);
         text->setFillColor(sf::Color::White);
-        text->setPosition(2 * SCREEN_WIDTH / 3, 10 + i * 20);
+        text->setPosition(2 * SCREEN_WIDTH / 3 + 10, 10 + i * 20);
         this->logsTexts->push_back(text);
     }
 
@@ -480,4 +486,30 @@ UI::~UI() {
 
     delete this->actualPlayerSprite;
     delete this->actualPlayerRoleSprite;
+
+    for (std::vector<sf::Sprite*>::iterator it = this->actualPlayerCardSprites->begin(); it != this->actualPlayerCardSprites->end(); it++) {
+        delete *it;
+    }
+    delete this->actualPlayerCardSprites;
+
+    for (std::vector<sf::Sprite*>::iterator it = this->stackSprites->begin(); it != this->stackSprites->end(); it++) {
+        delete *it;
+    }
+    delete this->stackSprites;
+
+    for (std::vector<sf::Sprite*>::iterator it = this->discardStackSprites->begin(); it != this->discardStackSprites->end(); it++) {
+        delete *it;
+    }
+    delete this->discardStackSprites;
+
+    for (std::vector<sf::Text*>::iterator it = this->logsTexts->begin(); it != this->logsTexts->end(); it++) {
+        delete *it;
+    }
+    delete this->logsTexts;
+
+    delete this->logsBackground;
+    delete this->openLogsText;
+    delete this->openLogsBtn;
+    delete this->closeLogsText;
+    delete this->closeLogsBtn;
 }

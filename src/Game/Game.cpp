@@ -299,6 +299,8 @@ void Game::pick() {
         
         this->players->at(this->indexActualPlayer)->getHand()->push_back(this->cards->back());
         this->cards->pop_back();
+        std::string *log = new std::string("Le joueur a pioche une carte.");
+        this->logs->push_back(log);
     }
 }
 
