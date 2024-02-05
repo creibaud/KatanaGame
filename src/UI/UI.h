@@ -50,6 +50,11 @@ class UI {
         sf::RectangleShape *closeLogsBtn;
         bool isOpenLogsText;
 
+        Button *passParadeBtn;
+        Button *endTurnBtn;
+        Button *discardingBtn;
+        bool isDiscarding;
+
         Game *game;
         int indexActualPlayer;
         bool blocking;
@@ -75,6 +80,9 @@ class UI {
 
         void handleClickLogBtn(sf::Event event);
         void handleClickHandCard(sf::Event event);
+        void handleClickPassParadeBtn(sf::Event event);
+        void handleClickEndTurnBtn(sf::Event event);
+        void handleClickDiscardingBtn(sf::Event event);
 
         ~UI();
 };

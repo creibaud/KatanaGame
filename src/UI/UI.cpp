@@ -71,6 +71,11 @@ UI::UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *bac
     this->closeLogsBtn = new sf::RectangleShape(sf::Vector2f(75, 75));
     this->isOpenLogsText = false;
 
+    this->passParadeBtn = new Button(sf::Vector2f(SCREEN_WIDTH / 3 - 100, SCREEN_HEIGHT - 50), sf::Vector2f(200, 50), this->font, "No Parade", 20);
+    this->endTurnBtn = new Button(sf::Vector2f(2 * SCREEN_WIDTH / 3 - 100, SCREEN_HEIGHT - 50), sf::Vector2f(200, 50), this->font, "End Turn", 20);
+    this->discardingBtn = new Button(sf::Vector2f(SCREEN_WIDTH / 2 - 100, SCREEN_HEIGHT - 50), sf::Vector2f(200, 50), this->font, "Discard", 20);
+    this->isDiscarding = false;
+
     this->game = new Game();
     this->blocking = false;
     this->nbPlayers = 0;
@@ -106,14 +111,13 @@ void UI::start() {
         while (this->window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 this->window->close();
-            } else if (event.type == sf::Event::KeyPressed) {
-                if (event.key.code == sf::Keyboard::A) {
-                    this->game->changePlayer();
-                }
-            }
+            } 
 
             this->handleClickLogBtn(event);
             this->handleClickHandCard(event);
+            this->handleClickPassParadeBtn(event);
+            this->handleClickEndTurnBtn(event);
+            this->handleClickDiscardingBtn(event);
         }
 
         this->window->clear(sf::Color::Black);
@@ -140,6 +144,10 @@ void UI::update() {
     this->setStackSprite();
     this->setDiscardStackSprite();
     this->setLogsTexts();
+
+    if (this->isDiscarding && this->hand->size() <= 7) {
+        this->isDiscarding = false;
+    }
 }
 
 void UI::display() {
@@ -212,6 +220,18 @@ void UI::display() {
         this->window->draw(*this->openLogsText);
     } else {
         this->window->draw(*this->closeLogsText);
+    }
+
+    if (this->blocking) {
+        this->passParadeBtn->draw(*this->window);
+    }
+
+    if (this->hand->size() > 7 && !this->isDiscarding && !this->blocking) {
+        this->discardingBtn->draw(*this->window);
+    }
+
+    if (this->hand->size() <= 7 && !this->isDiscarding && !this->blocking) {
+        this->endTurnBtn->draw(*this->window);
     }
 }
 
@@ -452,9 +472,12 @@ void UI::handleClickHandCard(sf::Event event) {
                     if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == -1) {
                         this->indexSelectedCard = i;
 
-                        if (this->hand->at(i)->getType() != CardType::WEAPON) {
+                        if (this->isDiscarding && this->hand->at(i)->getType() != CardType::WEAPON) {
                             this->indexSelectedCard = -1;
                             this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
+                            break;
+                        } else if (!this->isDiscarding && this->hand->at(i)->getType() != CardType::WEAPON) {
+                            this->indexSelectedCard = -1;
                             break;
                         }
                     } else if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == static_cast<int>(i)) {
@@ -487,6 +510,7 @@ void UI::handleClickHandCard(sf::Event event) {
                             if (this->game->canBlock(this->players->at(this->indexActualPlayer))) {
                                 this->blocking = true;
                             } else {
+                                this->players->at(this->indexSelectedPlayer)->HP -= weapon->getDamage();
                                 this->blocking = false;
                             }
                         }
@@ -496,6 +520,38 @@ void UI::handleClickHandCard(sf::Event event) {
                         break;
                     }
                 }
+            }
+        }
+    }
+}
+
+void UI::handleClickPassParadeBtn(sf::Event event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            if (this->blocking && this->passParadeBtn->isClicked(*this->window)) {
+                Weapon *weapon = dynamic_cast<Weapon*>(this->discardStack->back());
+                this->players->at(this->indexActualPlayer)->HP -= weapon->getDamage();
+                this->blocking = false;
+            }
+        }
+    }
+}
+
+void UI::handleClickEndTurnBtn(sf::Event event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            if (this->hand->size() <= 7 && this->endTurnBtn->isClicked(*this->window)) {
+                this->game->changePlayer();
+            }
+        }
+    }
+}
+
+void UI::handleClickDiscardingBtn(sf::Event event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            if (this->hand->size() > 7 && !this->isDiscarding && !this->blocking && this->discardingBtn->isClicked(*this->window)) {
+                this->isDiscarding = true;
             }
         }
     }
