@@ -34,12 +34,13 @@ class Game {
         std::vector<Card*> *getCards() const;
         std::vector<Card*> *getDiscards() const;
 
-        void recover();
+        void recoverHP();
         void pick();
         bool attack(Weapon *card, Player *player);
         int calculateDistance(Player *player);
         bool canBlock(Player *player);
         void discard(Player *player, Card* card);
+        void recoverCards();
         void changePlayer();
 
         ~Game();

@@ -50,10 +50,14 @@ UI::UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *bac
     
     this->actualPlayerSprite = new sf::Sprite();
     this->actualPlayerRoleSprite = new sf::Sprite();
+    this->actualPlayerCardSprites = new std::vector<sf::Sprite*>();
     this->HPSpritePlayer = new sf::Sprite();
     this->HPTextPlayer = new sf::Text();
     this->HonorSpritePlayer = new sf::Sprite();
     this->HonorTextPlayer = new sf::Text();
+
+    this->stackSprites = new std::vector<sf::Sprite*>();
+    this->discardStackSprites = new std::vector<sf::Sprite*>();
 
     this->game = new Game();
     this->nbPlayers = 0;
@@ -104,8 +108,13 @@ void UI::start() {
 
 void UI::update() {
     this->players = this->game->getPlayers();
+    this->hand = this->players->at(this->game->getIndexActualPlayer())->getHand();
+    this->stack = this->game->getCards();
+    this->discardStack = this->game->getDiscards();
     this->setPlayersSprites();
     this->setActualPlayerSprite();
+    this->setStackSprite();
+    this->setDiscardStackSprite();
 }
 
 void UI::display() {
@@ -124,6 +133,16 @@ void UI::display() {
     this->window->draw(*this->HPTextPlayer);
     this->window->draw(*this->HonorSpritePlayer);
     this->window->draw(*this->HonorTextPlayer);
+
+    for (std::vector<sf::Sprite*>::iterator it = this->actualPlayerCardSprites->begin(); it != this->actualPlayerCardSprites->end(); it++) {
+        if ((*it)->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+            (*it)->setPosition((*it)->getPosition().x, SCREEN_HEIGHT - 100 - (*it)->getTexture()->getSize().y - 20);
+        } else {
+            (*it)->setPosition((*it)->getPosition().x, SCREEN_HEIGHT - 100 - (*it)->getTexture()->getSize().y);
+        }
+
+        this->window->draw(*(*it));
+    }
 
     if (this->spriteShogunIndex != -1) {
         sf::CircleShape *circleShapeShogunPlayer = new sf::CircleShape();
@@ -146,6 +165,14 @@ void UI::display() {
         this->window->draw(*this->actualPlayerRoleSprite);
     } else {
         this->window->draw(*this->backRoleSprite);
+    }
+
+    for (std::vector<sf::Sprite*>::iterator it = this->stackSprites->begin(); it != this->stackSprites->end(); it++) {
+        this->window->draw(*(*it));
+    }
+
+    for (std::vector<sf::Sprite*>::iterator it = this->discardStackSprites->begin(); it != this->discardStackSprites->end(); it++) {
+        this->window->draw(*(*it));
     }
 }
 
@@ -259,6 +286,8 @@ void UI::setActualPlayerSprite() {
 
     this->HonorSpritePlayer->setPosition(this->HPSpritePlayer->getPosition().x + this->HPTexture->getSize().x * 0.5 + 10 + this->HonorTextPlayer->getGlobalBounds().width + 5, this->actualPlayerSprite->getPosition().y - 2 * this->HonorSpritePlayer->getTexture()->getSize().y / 3 - 5);
     this->HonorTextPlayer->setPosition(this->HPSpritePlayer->getPosition().x + this->HPTexture->getSize().x * 0.5 + 10, this->actualPlayerSprite->getPosition().y - this->HPTextPlayer->getGlobalBounds().height - this->HPSpritePlayer->getTexture()->getSize().y / 2);
+
+    this->setHandSprite();
 }
 
 void UI::setSpriteHonorCharactersHP(int index) {
@@ -287,6 +316,51 @@ void UI::setSpriteHonorCharactersHP(int index) {
     HonorSprite->setTexture(*this->HonorTexture);
     HonorSprite->setScale(0.5, 0.5);
     this->HonorSprites->push_back(HonorSprite);
+}
+
+void UI::setHandSprite() {
+    for (std::vector<sf::Sprite*>::iterator it = this->actualPlayerCardSprites->begin(); it != this->actualPlayerCardSprites->end(); it++) {
+        delete *it;
+    }
+    this->actualPlayerCardSprites->clear();
+
+    for (std::vector<Card*>::size_type i = 0; i < this->hand->size(); i++) {
+        int index = this->hand->at(i)->getIndex();
+        sf::Sprite *sprite = new sf::Sprite();
+        sprite->setTexture(*this->cardTextures->at(index));
+        sprite->setPosition(SCREEN_WIDTH / 2 - hand->size() * sprite->getTexture()->getSize().x / 2 + i * (sprite->getTexture()->getSize().x + 5), SCREEN_HEIGHT - 100 - sprite->getTexture()->getSize().y);
+        this->actualPlayerCardSprites->push_back(sprite);
+    }
+}
+
+void UI::setStackSprite() {
+    for (std::vector<sf::Sprite*>::iterator it = this->stackSprites->begin(); it != this->stackSprites->end(); it++) {
+        delete *it;
+    }
+    this->stackSprites->clear();
+
+    for (std::vector<Card*>::size_type i = 0; i < this->stack->size(); i++) {
+        sf::Sprite *sprite = new sf::Sprite();
+        sprite->setTexture(*backCardTexture);
+        sprite->setPosition(SCREEN_WIDTH / 2 + 5, SCREEN_HEIGHT / 2 - sprite->getTexture()->getSize().y / 2 - i);
+        this->stackSprites->push_back(sprite);
+    }
+}
+
+void UI::setDiscardStackSprite() {
+    for (std::vector<sf::Sprite*>::iterator it = this->discardStackSprites->begin(); it != this->discardStackSprites->end(); it++) {
+        delete *it;
+    }
+    this->discardStackSprites->clear();
+
+    for (std::vector<Card*>::size_type i = 0; i < this->discardStack->size(); i++) {
+        int index = this->discardStack->at(i)->getIndex();
+
+        sf::Sprite *sprite = new sf::Sprite();
+        sprite->setTexture(*this->cardTextures->at(index));
+        sprite->setPosition(SCREEN_WIDTH / 2 - 5 - sprite->getTexture()->getSize().x, SCREEN_HEIGHT / 2 - sprite->getTexture()->getSize().y / 2 - i);
+        this->discardStackSprites->push_back(sprite);
+    }
 }
 
 UI::~UI() {

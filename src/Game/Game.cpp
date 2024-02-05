@@ -282,12 +282,16 @@ std::vector<Card*> *Game::getDiscards() const {
     return this->discards;
 }
 
-void Game::recover() {
+void Game::recoverHP() {
     this->players->at(this->indexActualPlayer)->recover();
 }
 
 void Game::pick() {
     for (int i = 0; i < 2; i++) {
+        if (this->cards->size() <= 0) {
+            this->recoverCards();
+        }
+        
         this->players->at(this->indexActualPlayer)->getHand()->push_back(this->cards->back());
         this->cards->pop_back();
     }
@@ -344,8 +348,23 @@ void Game::changePlayer() {
     if (this->indexActualPlayer == this->nbPlayers) {
         this->indexActualPlayer = 0;
     }
-    this->recover();
+    this->recoverHP();
     this->pick();
+
+    for (int i = 0; i < 2; i++) {
+        this->discard(this->players->at(this->indexActualPlayer), this->players->at(this->indexActualPlayer)->getHand()->back());
+    }
+}
+
+void Game::recoverCards() {
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(this->discards->begin(), this->discards->end(), g);
+
+    for (std::vector<Card*>::iterator it = this->discards->begin(); it != this->discards->end(); it++) {
+        this->cards->push_back(*it);
+    }
+    this->discards->clear();
 }
 
 Game::~Game() {

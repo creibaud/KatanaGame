@@ -27,12 +27,19 @@ class UI {
 
         sf::Sprite *actualPlayerSprite;
         sf::Sprite *actualPlayerRoleSprite;
+        std::vector<sf::Sprite*> *actualPlayerCardSprites;
         sf::Sprite *HPSpritePlayer;
         sf::Text *HPTextPlayer;
         sf::Sprite *HonorSpritePlayer;
         sf::Text *HonorTextPlayer;
 
-        std::vector<Player *> *players;
+        std::vector<sf::Sprite*> *stackSprites;
+        std::vector<sf::Sprite*> *discardStackSprites;
+
+        std::vector<Player*> *players;
+        std::vector<Card*> *hand;
+        std::vector<Card*> *stack;
+        std::vector<Card*> *discardStack;
 
         Game *game;
         int nbPlayers;
@@ -47,6 +54,9 @@ class UI {
         void setPlayersSprites();
         void setSpriteHonorCharactersHP(int index);
         void setActualPlayerSprite();
+        void setHandSprite();
+        void setStackSprite();
+        void setDiscardStackSprite();
         ~UI();
 };
 
