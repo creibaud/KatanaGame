@@ -73,6 +73,7 @@ UI::UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *bac
 
     this->game = new Game();
     this->nbPlayers = 0;
+    this->indexSelectedCard = -1;
 }
 
 void UI::menu(sf::Image *leftImage, sf::Image *rightImage) {
@@ -110,6 +111,7 @@ void UI::start() {
             }
 
             this->handleClickLogBtn(event);
+            this->handleClickHandCard(event);
         }
 
         this->window->clear(sf::Color::Black);
@@ -151,14 +153,15 @@ void UI::display() {
     this->window->draw(*this->HonorSpritePlayer);
     this->window->draw(*this->HonorTextPlayer);
 
-    for (std::vector<sf::Sprite*>::iterator it = this->actualPlayerCardSprites->begin(); it != this->actualPlayerCardSprites->end(); it++) {
-        if ((*it)->getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-            (*it)->setPosition((*it)->getPosition().x, SCREEN_HEIGHT - 100 - (*it)->getTexture()->getSize().y - 20);
+    for (std::vector<sf::Sprite*>::size_type i = 0; i < this->actualPlayerCardSprites->size(); i++) {
+        sf::Sprite* sprite = this->actualPlayerCardSprites->at(i);
+        if ((sprite->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == -1) || this->indexSelectedCard == static_cast<int>(i)) {
+            sprite->setPosition(sprite->getPosition().x, SCREEN_HEIGHT - 100 - sprite->getTexture()->getSize().y - 20);
         } else {
-            (*it)->setPosition((*it)->getPosition().x, SCREEN_HEIGHT - 100 - (*it)->getTexture()->getSize().y);
+            sprite->setPosition(sprite->getPosition().x, SCREEN_HEIGHT - 100 - sprite->getTexture()->getSize().y);
         }
 
-        this->window->draw(*(*it));
+        this->window->draw(*sprite);
     }
 
     if (this->spriteShogunIndex != -1) {
@@ -429,6 +432,25 @@ void UI::handleClickLogBtn(sf::Event event) {
             } else {
                 if (this->closeLogsBtn->getGlobalBounds().contains(event.mouseButton.x, event.mouseButton.y)) {
                     this->isOpenLogsText = true;
+                }
+            }
+        }
+    }
+}
+
+void UI::handleClickHandCard(sf::Event event) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            sf::Vector2i mousePos = sf::Mouse::getPosition(*this->window);
+            for (std::vector<sf::Sprite*>::size_type i = 0; i < this->actualPlayerCardSprites->size(); i++) {
+                if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == -1) {
+                    this->indexSelectedCard = i;
+                    break;
+                }
+
+                if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedCard == static_cast<int>(i)) {
+                    this->indexSelectedCard = -1;
+                    break;
                 }
             }
         }

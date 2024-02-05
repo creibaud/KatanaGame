@@ -53,9 +53,11 @@ class UI {
         Game *game;
         int nbPlayers;
         int spriteShogunIndex;
+        int indexSelectedCard;
     
     public:
         UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *backRoleImage, sf::Image *backCardImage, std::vector<sf::Image*> *roleImages, std::vector<sf::Image*> *cardImages, std::vector<sf::Image*> *characterImages);
+        
         void menu(sf::Image *leftImage, sf::Image *rightImage);
         void start();
         void update();
@@ -69,6 +71,8 @@ class UI {
         void setLogsTexts();
 
         void handleClickLogBtn(sf::Event event);
+        void handleClickHandCard(sf::Event event);
+
         ~UI();
 };
 
