@@ -10,13 +10,43 @@ class UI {
         sf::RenderWindow *window;
         sf::Font *font;
 
+        sf::Texture *HPTexture;
+        sf::Texture *HonorTexture;
+        sf::Texture *backRoleTexture;
+        sf::Texture *backCardTexture;
+        std::vector<sf::Texture*> *roleTextures;
+        std::vector<sf::Texture*> *cardTextures;
+        std::vector<sf::Texture*> *characterTextures;
+
+        sf::Sprite *backRoleSprite;
+        std::vector<sf::Sprite*> *playersSprites;
+        std::vector<sf::Sprite*> *HPSprites;
+        std::vector<sf::Text*> *HPTexts;
+        std::vector<sf::Sprite*> *HonorSprites;
+        std::vector<sf::Text*> *HonorTexts;
+
+        sf::Sprite *actualPlayerSprite;
+        sf::Sprite *actualPlayerRoleSprite;
+        sf::Sprite *HPSpritePlayer;
+        sf::Text *HPTextPlayer;
+        sf::Sprite *HonorSpritePlayer;
+        sf::Text *HonorTextPlayer;
+
+        std::vector<Player *> *players;
+
         Game *game;
         int nbPlayers;
+        int spriteShogunIndex;
     
     public:
-        UI(sf::Font *font);
+        UI(sf::Font *font, sf::Image *HPImage, sf::Image *HonorImage, sf::Image *backRoleImage, sf::Image *backCardImage, std::vector<sf::Image*> *roleImages, std::vector<sf::Image*> *cardImages, std::vector<sf::Image*> *characterImages);
         void menu(sf::Image *leftImage, sf::Image *rightImage);
         void start();
+        void update();
+        void display();
+        void setPlayersSprites();
+        void setSpriteHonorCharactersHP(int index);
+        void setActualPlayerSprite();
         ~UI();
 };
 

@@ -93,7 +93,7 @@ int main() {
         characterImages->push_back(image);
     }
 
-    UI *ui = new UI(font);
+    UI *ui = new UI(font, HP, Honor, backRole, backCard, roleImages, cardImages, characterImages);
     ui->menu(leftImage, rightImage);
     ui->start();
     delete ui;
