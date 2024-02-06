@@ -534,6 +534,7 @@ void UI::handleClickHandCard(sf::Event event) {
                                     Permanent *permanent = dynamic_cast<Permanent*>(this->hand->at(i));
                                     this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed()->push_back(permanent);
                                     this->hand->erase(this->hand->begin() + i);
+                                    
 
                                     switch (permanent->getPermanentType()) {
                                         case PermanentType::ATTAQUE_RAPIDE: {

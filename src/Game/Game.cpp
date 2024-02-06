@@ -314,7 +314,7 @@ void Game::pick(Player *player, int nbCard) {
 bool Game::attack(Weapon *card, Player *player) {
     int range = card->getRange();
 
-    if (this->calculateDistance(player) <= range || this->players->at(this->indexActualPlayer)->getCharacter()->getType() == CharacterType::KOJIRO) {
+    if (this->calculateDistance(player) <= range || player->getCharacter()->getType() == CharacterType::KOJIRO) {
         return true;
     } else {
         return false;

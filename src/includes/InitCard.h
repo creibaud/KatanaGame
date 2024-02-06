@@ -24,7 +24,7 @@
 #define Nagayari Weapon(WeaponType::NAGAYARI, 2, 4)
 #define Tanegashima Weapon(WeaponType::TANEGASHIMA, 1, 5)
 #define Daikyu Weapon(WeaponType::DAIKYU, 2, 5)
-#define Bo Weapon(WeaponType::BO, 1, 6)
+#define Bo Weapon(WeaponType::BO, 1, 2)
 #define Kusarigama Weapon(WeaponType::KUSARIGAMA, 2, 2)
 #define Katana Weapon(WeaponType::KATANA, 3, 2)
 #define Shuriken Weapon(WeaponType::SHURIKEN, 1, 3)
