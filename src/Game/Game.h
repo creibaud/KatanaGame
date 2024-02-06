@@ -50,6 +50,7 @@ class Game {
         void criDeGuerreFunction();
         void daimyoFunction();
         void ceremonieDuTheFunction();
+        void juJitsuFunction();
 
         ~Game();
 };

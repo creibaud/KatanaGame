@@ -29,6 +29,8 @@ class Player {
         std::vector<Permanent*>* getPermanentCardsPlayed() const;
         int getMaxNbAttack() const;
 
+        void meditationFunction();
+
         int attackRapideFunction();
         void concentrationFunction();
 

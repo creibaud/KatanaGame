@@ -314,7 +314,7 @@ void Game::pick(Player *player, int nbCard) {
 bool Game::attack(Weapon *card, Player *player) {
     int range = card->getRange();
 
-    if (this->calculateDistance(player) <= range) {
+    if (this->calculateDistance(player) <= range || this->players->at(this->indexActualPlayer)->getCharacter()->getType() == CharacterType::KOJIRO) {
         return true;
     } else {
         return false;
@@ -324,10 +324,15 @@ bool Game::attack(Weapon *card, Player *player) {
 int Game::calculateDistance(Player *player) {
     int indexPlayer = std::find(this->players->begin(), this->players->end(), player) - this->players->begin();
 
+    int moreRange = 0;
+    if (this->players->at(indexPlayer)->getCharacter()->getType() == CharacterType::BENKEI) {
+        moreRange = 1;
+    }
+
     if (indexPlayer < this->indexActualPlayer) {
-        return std::min(this->indexActualPlayer - indexPlayer, this->nbPlayers - this->indexActualPlayer + indexPlayer);
+        return std::min(this->indexActualPlayer - indexPlayer, this->nbPlayers - this->indexActualPlayer + indexPlayer) + moreRange;
     } else {
-        return std::min(indexPlayer - this->indexActualPlayer, this->nbPlayers - indexPlayer + this->indexActualPlayer);
+        return std::min(indexPlayer - this->indexActualPlayer, this->nbPlayers - indexPlayer + this->indexActualPlayer) + moreRange;
     }
 }
 
@@ -356,7 +361,14 @@ void Game::changePlayer() {
         this->indexActualPlayer = 0;
     }
     this->recoverHP();
-    this->pick(this->players->at(this->indexActualPlayer), 2);
+
+    int nbCards = 2;
+
+    if (this->players->at(this->indexActualPlayer)->getCharacter()->getType() == CharacterType::HIDEYOSHI) {
+        nbCards++;
+    }
+
+    this->pick(this->players->at(this->indexActualPlayer), nbCards);
 }
 
 void Game::recoverCards() {
@@ -391,7 +403,7 @@ void Game::criDeGuerreFunction() {
                 }
             }
 
-            if (!asDiscarded) {
+            if (!asDiscarded && (*it1)->getCharacter()->getType() != CharacterType::CHIYOME) {
                 (*it1)->HP -= 1;
             }
         }

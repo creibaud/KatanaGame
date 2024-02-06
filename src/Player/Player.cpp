@@ -9,6 +9,10 @@ Player::Player(Role *role, Character *character)
     this->asAttacked = false;
     this->maxNbAttack = 1;
     this->nbAttack = 0;
+
+    if (character->getType() == CharacterType::GOEMON) {
+        this->maxNbAttack++;
+    }
 }
 
 Role* Player::getRole() const {
@@ -33,6 +37,10 @@ int Player::getMaxNbAttack() const {
 
 bool Player::isDown() const {
     return this->HP <= 0 || this->hand->size() <= 0;
+}
+
+void Player::meditationFunction() {
+    this->HP = this->character->getHP();
 }
 
 int Player::attackRapideFunction() {

@@ -509,6 +509,8 @@ void UI::handleClickHandCard(sf::Event event) {
                                             break;
                                         }
                                         case ActionType::MEDITATION: {
+                                            this->players->at(this->indexActualPlayer)->meditationFunction();
+                                            this->indexSelectedCard = i;
                                             break;
                                         }
                                         case ActionType::PARADE: {
@@ -595,23 +597,42 @@ void UI::handleClickHandCard(sf::Event event) {
                                 if (this->game->canBlock(this->players->at(this->indexActualPlayer))) {
                                     this->blocking = true;
                                 } else {
-                                    this->players->at(this->indexSelectedPlayer)->HP -= weapon->getDamage() + this->attackRapideNbDamage;
+                                    int damage = weapon->getDamage() + this->attackRapideNbDamage;
+                
+                                    if (this->players->at(this->indexSelectedPlayer)->getCharacter()->getType() == CharacterType::GINCHIYO) {
+                                        damage = std::min(1, damage - 1);
+                                    } else if (this->players->at(this->game->getIndexActualPlayer())->getCharacter()->getType() == CharacterType::MUSASHI) {
+                                        damage++;
+                                    } else if (this->players->at(this->game->getIndexActualPlayer())->getCharacter()->getType() == CharacterType::TOMOE) {
+                                        this->game->pick(this->players->at(this->game->getIndexActualPlayer()), 1);
+                                    } else if (this->players->at(this->indexSelectedPlayer)->getCharacter()->getType() == CharacterType::USHIWAKA) {
+                                        this->game->pick(this->players->at(this->indexSelectedPlayer), damage);
+                                    }
+
+                                    this->players->at(this->indexSelectedPlayer)->HP -= damage;
                                     this->blocking = false;
                                 }
                             }
                         } else if (this->hand->at(this->indexSelectedCard)->getType() == CardType::ACTION) {
-                            std::vector<Card*> *targetHand = this->players->at(this->indexSelectedPlayer)->getHand();
+                            Action *action = dynamic_cast<Action*>(this->hand->at(this->indexSelectedCard));
 
-                            std::random_device rd;
-                            std::mt19937 g(rd());
+                            if (action->getActionType() == ActionType::DIVERSION) {
+                                std::vector<Card*> *targetHand = this->players->at(this->indexSelectedPlayer)->getHand();
 
-                            if (!targetHand->empty() && !this->players->at(this->indexSelectedPlayer)->isDown()) {
-                                std::uniform_int_distribution<int> distribution(0, targetHand->size() - 1);
-                                int randomIndex = distribution(g);
-                                Card* randomCard = targetHand->at(randomIndex);
+                                std::random_device rd;
+                                std::mt19937 g(rd());
 
-                                targetHand->erase(targetHand->begin() + randomIndex);
-                                this->hand->push_back(randomCard);
+                                if (!targetHand->empty() && !this->players->at(this->indexSelectedPlayer)->isDown()) {
+                                    std::uniform_int_distribution<int> distribution(0, targetHand->size() - 1);
+                                    int randomIndex = distribution(g);
+                                    Card* randomCard = targetHand->at(randomIndex);
+
+                                    targetHand->erase(targetHand->begin() + randomIndex);
+                                    this->hand->push_back(randomCard);
+                                    this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
+                                }
+                            } else if (action->getActionType() == ActionType::MEDITATION) {
+                                this->game->pick(this->players->at(this->indexSelectedPlayer), 1);
                                 this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
                             }
                         }
@@ -631,7 +652,19 @@ void UI::handleClickPassParadeBtn(sf::Event event) {
         if (event.mouseButton.button == sf::Mouse::Left) {
             if (this->blocking && this->passParadeBtn->isClicked(*this->window)) {
                 Weapon *weapon = dynamic_cast<Weapon*>(this->discardStack->back());
-                this->players->at(this->indexActualPlayer)->HP -= weapon->getDamage() + this->attackRapideNbDamage;
+                int damage = weapon->getDamage() + this->attackRapideNbDamage;
+                
+                if (this->players->at(this->indexActualPlayer)->getCharacter()->getType() == CharacterType::GINCHIYO) {
+                    damage = std::min(1, damage - 1);
+                } else if (this->players->at(this->game->getIndexActualPlayer())->getCharacter()->getType() == CharacterType::MUSASHI) {
+                    damage++;
+                } else if (this->players->at(this->game->getIndexActualPlayer())->getCharacter()->getType() == CharacterType::TOMOE) {
+                    this->game->pick(this->players->at(this->game->getIndexActualPlayer()), 1);
+                } else if (this->players->at(this->indexActualPlayer)->getCharacter()->getType() == CharacterType::USHIWAKA) {
+                    this->game->pick(this->players->at(this->indexActualPlayer), damage);
+                }
+
+                this->players->at(this->indexActualPlayer)->HP -= damage;
                 this->blocking = false;
             }
         }
