@@ -32,6 +32,7 @@ class Player {
         void meditationFunction();
 
         int attackRapideFunction();
+        int armureFunction();
         void concentrationFunction();
 
         bool isDown() const;

@@ -329,6 +329,8 @@ int Game::calculateDistance(Player *player) {
         moreRange = 1;
     }
 
+    moreRange += player->armureFunction();
+
     if (indexPlayer < this->indexActualPlayer) {
         return std::min(this->indexActualPlayer - indexPlayer, this->nbPlayers - this->indexActualPlayer + indexPlayer) + moreRange;
     } else {

@@ -53,6 +53,16 @@ int Player::attackRapideFunction() {
     return nbDamage;
 }
 
+int Player::armureFunction() {
+    int nbArmure = 0;
+    for (std::vector<Permanent*>::iterator it = this->permanentCardsPlayed->begin(); it != this->permanentCardsPlayed->end(); ++it) {
+        if ((*it)->getPermanentType() == PermanentType::ARMURE) {
+            nbArmure++;
+        }
+    }
+    return nbArmure;
+}
+
 void Player::concentrationFunction() {
     this->maxNbAttack++;
 }
