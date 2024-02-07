@@ -522,6 +522,8 @@ void UI::handleClickHandCard(sf::Event event) {
                                             break;
                                         }
                                         case ActionType::JU_JITSU: {
+                                            this->game->juJitsuFunction();
+                                            this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
                                             break;
                                         }
                                         default: {

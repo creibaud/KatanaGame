@@ -426,6 +426,27 @@ void Game::ceremonieDuTheFunction() {
     }
 }
 
+void Game::juJitsuFunction() {
+    for (std::vector<Player*>::iterator it1 = this->players->begin(); it1 != this->players->end(); it1++) {
+        if (!(*it1)->isDown()) {
+            std::vector<Card*> *hand = (*it1)->getHand();
+
+            bool asDiscarded = false;
+            for (std::vector<Card*>::iterator it2 = hand->begin(); it2 != hand->end(); it2++) {
+                if ((*it2)->getType() == CardType::WEAPON) {
+                    this->discard(*it1, *it2);
+                    asDiscarded = true;
+                    break;
+                }
+            }
+
+            if (!asDiscarded && (*it1)->getCharacter()->getType() != CharacterType::CHIYOME) {
+                (*it1)->HP -= 1;
+            }
+        }
+    }
+}
+
 Game::~Game() {
     for (std::vector<Card*>::iterator it = this->cards->begin(); it != this->cards->end(); ++it) {
         delete *it;
