@@ -41,7 +41,7 @@ class Game {
         void recoverHP();
         void pick(Player *player, int nbCard);
         bool attack(Weapon *card, Player *player);
-        int calculateDistance(Player *player);
+        int calculateDistance(Player *playerTarget);
         bool canBlock(Player *player);
         void discard(Player *player, Card* card);
         void recoverCards();

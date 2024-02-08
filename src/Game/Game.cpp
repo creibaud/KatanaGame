@@ -321,21 +321,69 @@ bool Game::attack(Weapon *card, Player *player) {
     }
 }
 
-int Game::calculateDistance(Player *player) {
-    int indexPlayer = std::find(this->players->begin(), this->players->end(), player) - this->players->begin();
+int Game::calculateDistance(Player *playerTarget) {    
+    bool findPlayerTarget = false;
+    int distanceClockwise = 0;
+    
+    std::vector<Player*>::size_type indexDifferenceClockwise = this->indexActualPlayer - (this->players->begin() - this->players->begin());
+    for (std::vector<Player*>::size_type i = indexDifferenceClockwise + 1; i < this->players->size(); i++) {
+        if (!this->players->at(i)->isDown()) {
+            distanceClockwise++;
+            if (this->players->at(i) == playerTarget) {
+                findPlayerTarget = true;
+                break;
+            }
+        }
+    }
+
+    if (!findPlayerTarget) {
+        indexDifferenceClockwise = std::distance(this->players->begin(), this->players->begin() + this->indexActualPlayer);
+        for (std::vector<Player*>::size_type i = 0; i < indexDifferenceClockwise; i++) {
+            if (!this->players->at(i)->isDown()) {
+                distanceClockwise++;
+                if (this->players->at(i) == playerTarget) {
+                    findPlayerTarget = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    findPlayerTarget = false;
+    int distanceCounterClockwise = 0;
+
+    std::vector<Player*>::size_type indexDifferenceCounterClockwise = std::distance(this->players->begin(), this->players->begin() + this->indexActualPlayer);
+    for (std::vector<Player*>::size_type i = indexDifferenceCounterClockwise - 1; i < this->players->size(); i--) {
+        if (!this->players->at(i)->isDown()) {
+            distanceCounterClockwise++;
+            if (this->players->at(i) == playerTarget) {
+                findPlayerTarget = true;
+                break;
+            }
+        }
+    }
+
+    if (!findPlayerTarget) {
+        indexDifferenceCounterClockwise = this->indexActualPlayer - std::distance(this->players->begin(), this->players->end());
+        for (std::vector<Player*>::size_type i = this->players->size() - 1; i > indexDifferenceCounterClockwise; i--) {
+            if (!this->players->at(i)->isDown()) {
+                distanceCounterClockwise++;
+                if (this->players->at(i) == playerTarget) {
+                    findPlayerTarget = true;
+                    break;
+                }
+            }
+        }
+    }
 
     int moreRange = 0;
-    if (this->players->at(indexPlayer)->getCharacter()->getType() == CharacterType::BENKEI) {
+    if (playerTarget->getCharacter()->getType() == CharacterType::BENKEI) {
         moreRange = 1;
     }
 
-    moreRange += player->armureFunction();
-
-    if (indexPlayer < this->indexActualPlayer) {
-        return std::min(this->indexActualPlayer - indexPlayer, this->nbPlayers - this->indexActualPlayer + indexPlayer) + moreRange;
-    } else {
-        return std::min(indexPlayer - this->indexActualPlayer, this->nbPlayers - indexPlayer + this->indexActualPlayer) + moreRange;
-    }
+    moreRange += playerTarget->armureFunction();
+    
+    return std::min(distanceClockwise, distanceCounterClockwise) + moreRange;
 }
 
 bool Game::canBlock(Player *player) {
