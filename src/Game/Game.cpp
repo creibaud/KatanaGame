@@ -394,7 +394,7 @@ bool Game::canBlock(Player *player) {
             if (action->getActionType() == ActionType::PARADE) {
                 return true;
             }
-        } else if (player->getCharacter()->getType() == CharacterType::HANZO && (*it)->getType() == CardType::WEAPON) {
+        } else if (player->getCharacter()->getType() == CharacterType::HANZO && (*it)->getType() == CardType::WEAPON && player->getHand()->size() > 1) {
             return true;
         }
     }
@@ -463,7 +463,7 @@ void Game::criDeGuerreFunction() {
 
             if (!asDiscarded && (*it1)->getCharacter()->getType() == CharacterType::HANZO) {
                 for (std::vector<Card*>::iterator it2 = hand->begin(); it2 != hand->end(); it2++) {
-                    if ((*it2)->getType() == CardType::WEAPON) {
+                    if ((*it2)->getType() == CardType::WEAPON && hand->size() > 1) {
                         this->discard(*it1, *it2);
                         asDiscarded = true;
                         break;
