@@ -53,6 +53,15 @@ int Player::attackRapideFunction() {
     return nbDamage;
 }
 
+std::pair<Permanent*, int> Player::asCodeDuBushido() {
+    for (std::vector<Permanent*>::size_type i = 0; i < this->permanentCardsPlayed->size(); i++) {
+        if (this->permanentCardsPlayed->at(i)->getPermanentType() == PermanentType::CODE_DU_BUSHIDO) {
+            return std::make_pair(this->permanentCardsPlayed->at(i), i);
+        }
+    }
+    return std::make_pair(nullptr, -1);
+}
+
 int Player::armureFunction() {
     int nbArmure = 0;
     for (std::vector<Permanent*>::iterator it = this->permanentCardsPlayed->begin(); it != this->permanentCardsPlayed->end(); ++it) {

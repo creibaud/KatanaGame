@@ -8,6 +8,7 @@ Game::Game() {
     this->players = new std::vector<Player*>();
     this->logs = new std::vector<std::string*>();
     this->indexActualPlayer = 0;
+    this->isCarteDuBushidoInGame = false;
 }
 
 void Game::initRole() {
@@ -410,7 +411,12 @@ void Game::changePlayer() {
     if (this->indexActualPlayer == this->nbPlayers) {
         this->indexActualPlayer = 0;
     }
+
     this->recoverHP();
+
+    if (this->players->at(this->indexActualPlayer)->asCodeDuBushido().first != nullptr) {
+        this->codeDuBushidoFunction();
+    }
 
     int nbCards = 2;
 
@@ -492,6 +498,56 @@ void Game::juJitsuFunction() {
                 (*it1)->HP -= 1;
             }
         }
+    }
+}
+
+void Game::codeDuBushidoFunction() {
+    Card *pickedCard = this->cards->back();
+    this->cards->pop_back();
+    this->discards->push_back(pickedCard);
+
+    if (pickedCard->getType() == CardType::WEAPON) {
+        std::vector<Card*> *hand = this->players->at(this->indexActualPlayer)->getHand();
+
+        bool asDiscarded = false;
+        for (std::vector<Card*>::iterator it = hand->begin(); it != hand->end(); it++) {
+            if ((*it)->getType() == CardType::WEAPON) {
+                this->discard(this->players->at(this->indexActualPlayer), *it);
+                asDiscarded = true;
+                break;
+            }
+        }
+
+        if (!asDiscarded) {
+            this->players->at(this->indexActualPlayer)->honorPoints -= 1;
+            std::vector<Permanent*> *playerPermanentCards = this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed();
+            playerPermanentCards->erase(playerPermanentCards->begin() + this->players->at(this->indexActualPlayer)->asCodeDuBushido().second);
+            this->isCarteDuBushidoInGame = false;
+        } else {
+            int copyIndexActualPlayer = this->indexActualPlayer;
+            copyIndexActualPlayer++;
+            if (copyIndexActualPlayer == this->nbPlayers) {
+                copyIndexActualPlayer = 0;
+            }
+
+            Permanent *codeDuBushidoCard = this->players->at(this->indexActualPlayer)->asCodeDuBushido().first;
+            std::vector<Permanent*> *playerPermanentCards = this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed();
+            playerPermanentCards->erase(playerPermanentCards->begin() + this->players->at(this->indexActualPlayer)->asCodeDuBushido().second);
+
+            this->players->at(copyIndexActualPlayer)->getPermanentCardsPlayed()->push_back(codeDuBushidoCard);
+        }
+    } else {
+        int copyIndexActualPlayer = this->indexActualPlayer;
+        copyIndexActualPlayer++;
+        if (copyIndexActualPlayer == this->nbPlayers) {
+            copyIndexActualPlayer = 0;
+        }
+
+        Permanent *codeDuBushidoCard = this->players->at(this->indexActualPlayer)->asCodeDuBushido().first;
+        std::vector<Permanent*> *playerPermanentCards = this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed();
+        playerPermanentCards->erase(playerPermanentCards->begin() + this->players->at(this->indexActualPlayer)->asCodeDuBushido().second);
+
+        this->players->at(copyIndexActualPlayer)->getPermanentCardsPlayed()->push_back(codeDuBushidoCard);
     }
 }
 

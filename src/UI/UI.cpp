@@ -534,22 +534,37 @@ void UI::handleClickHandCard(sf::Event event) {
                                 }
                                 case CardType::PERMANENT: {
                                     Permanent *permanent = dynamic_cast<Permanent*>(this->hand->at(i));
-                                    this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed()->push_back(permanent);
-                                    this->hand->erase(this->hand->begin() + i);
-                                    
 
                                     switch (permanent->getPermanentType()) {
                                         case PermanentType::ATTAQUE_RAPIDE: {
+                                            this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed()->push_back(permanent);
+                                            this->hand->erase(this->hand->begin() + i);
                                             this->attackRapideNbDamage = this->players->at(this->game->getIndexActualPlayer())->attackRapideFunction();
                                             break;
                                         }
                                         case PermanentType::CODE_DU_BUSHIDO: {
+                                            if (!this->game->isCarteDuBushidoInGame) {
+                                                int copyIndexActualPlayer = this->indexActualPlayer;
+                                                copyIndexActualPlayer++;
+
+                                                if (copyIndexActualPlayer == this->nbPlayers) {
+                                                    copyIndexActualPlayer = 0;
+                                                }
+
+                                                this->players->at(copyIndexActualPlayer)->getPermanentCardsPlayed()->push_back(permanent);
+                                                this->hand->erase(this->hand->begin() + i);
+                                                this->game->isCarteDuBushidoInGame = true;
+                                            }
                                             break;
                                         }
                                         case PermanentType::ARMURE: {
+                                            this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed()->push_back(permanent);
+                                            this->hand->erase(this->hand->begin() + i);
                                             break;
                                         }
                                         case PermanentType::CONCENTRATION: {
+                                            this->players->at(this->indexActualPlayer)->getPermanentCardsPlayed()->push_back(permanent);
+                                            this->hand->erase(this->hand->begin() + i);
                                             this->players->at(this->game->getIndexActualPlayer())->concentrationFunction();
                                             break;
                                         }

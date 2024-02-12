@@ -32,6 +32,7 @@ class Player {
         void meditationFunction();
 
         int attackRapideFunction();
+        std::pair<Permanent*, int> asCodeDuBushido();
         int armureFunction();
         void concentrationFunction();
 

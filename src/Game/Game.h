@@ -19,6 +19,8 @@ class Game {
         int indexActualPlayer;
 
     public:
+        bool isCarteDuBushidoInGame;
+        
         Game();
         void initRole();
         void initCharacter();
@@ -51,6 +53,8 @@ class Game {
         void daimyoFunction();
         void ceremonieDuTheFunction();
         void juJitsuFunction();
+
+        void codeDuBushidoFunction();
 
         ~Game();
 };
