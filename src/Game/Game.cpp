@@ -426,7 +426,13 @@ void Game::changePlayer() {
         nbCards++;
     }
 
-    this->pick(this->players->at(this->indexActualPlayer), nbCards);
+    if (this->players->at(this->indexActualPlayer)->getCharacter()->getType() == CharacterType::IEYASU) {
+        this->players->at(this->indexActualPlayer)->getHand()->push_back(this->discards->back());
+        this->discards->pop_back();
+        this->pick(this->players->at(this->indexActualPlayer), 1);
+    } else {
+        this->pick(this->players->at(this->indexActualPlayer), nbCards);
+    }
 }
 
 void Game::recoverCards() {
@@ -472,7 +478,11 @@ void Game::criDeGuerreFunction() {
             }
 
             if (!asDiscarded && (*it1)->getCharacter()->getType() != CharacterType::CHIYOME) {
-                (*it1)->HP -= 1;
+                (*it1)->HP--;
+                if ((*it1) != this->players->at(this->indexActualPlayer)) {
+                    (*it1)->honorPoints--;
+                    this->players->at(this->indexActualPlayer)->honorPoints++;
+                }
             }
         }
     }
@@ -507,7 +517,11 @@ void Game::juJitsuFunction() {
             }
 
             if (!asDiscarded && (*it1)->getCharacter()->getType() != CharacterType::CHIYOME) {
-                (*it1)->HP -= 1;
+                (*it1)->HP--;
+                if ((*it1) != this->players->at(this->indexActualPlayer)) {
+                    (*it1)->honorPoints--;
+                    this->players->at(this->indexActualPlayer)->honorPoints++;
+                }
             }
         }
     }
@@ -561,6 +575,15 @@ void Game::codeDuBushidoFunction() {
 
         this->players->at(copyIndexActualPlayer)->getPermanentCardsPlayed()->push_back(codeDuBushidoCard);
     }
+}
+
+bool Game::isGameOver() {
+    for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); it++) {
+        if ((*it)->honorPoints <= 0) {
+            return true;
+        }
+    }
+    return false;
 }
 
 Game::~Game() {

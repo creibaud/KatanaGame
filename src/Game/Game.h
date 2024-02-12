@@ -20,7 +20,7 @@ class Game {
 
     public:
         bool isCarteDuBushidoInGame;
-        
+
         Game();
         void initRole();
         void initCharacter();
@@ -55,6 +55,8 @@ class Game {
         void juJitsuFunction();
 
         void codeDuBushidoFunction();
+
+        bool isGameOver();
 
         ~Game();
 };

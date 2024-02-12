@@ -108,7 +108,7 @@ void UI::start() {
     this->game->initCard();
     this->game->initPlayer();
 
-    while (this->window->isOpen()) {
+    while (!this->game->isGameOver()) {
         sf::Event event;
         while (this->window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -634,6 +634,11 @@ void UI::handleClickHandCard(sf::Event event) {
                                     }
 
                                     this->players->at(this->indexSelectedPlayer)->HP -= damage;
+
+                                    if (this->players->at(this->indexSelectedPlayer)->HP <= 0) {
+                                        this->players->at(this->indexSelectedPlayer)->honorPoints--;
+                                        this->players->at(this->game->getIndexActualPlayer())->honorPoints++;
+                                    }
                                     this->blocking = false;
                                 }
                             }
@@ -689,6 +694,10 @@ void UI::handleClickPassParadeBtn(sf::Event event) {
                 }
 
                 this->players->at(this->indexActualPlayer)->HP -= damage;
+                if (this->players->at(this->indexActualPlayer)->HP <= 0) {
+                    this->players->at(this->indexActualPlayer)->honorPoints--;
+                    this->players->at(this->game->getIndexActualPlayer())->honorPoints++;
+                }
                 this->blocking = false;
             }
         }
