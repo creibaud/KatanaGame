@@ -89,6 +89,10 @@ void UI::menu(sf::Image *leftImage, sf::Image *rightImage) {
     this->window->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Katana");
     this->window->setFramerateLimit(FPS);
 
+    sf::Image icon;
+    icon.loadFromFile("assets/images/icon.png");
+    this->window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
     Menu *menu = new Menu(this->font, leftImage, rightImage);
     menu->display(*window);
 
@@ -100,7 +104,10 @@ void UI::menu(sf::Image *leftImage, sf::Image *rightImage) {
 void UI::start() {
     this->window->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Katana");
     this->window->setFramerateLimit(FPS);
-    this->window->setVerticalSyncEnabled(true);
+
+    sf::Image icon;
+    icon.loadFromFile("assets/images/icon.png");
+    this->window->setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
     this->game->setNbPlayers(this->nbPlayers);
     this->game->initRole();
