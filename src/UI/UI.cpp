@@ -120,6 +120,7 @@ void UI::start() {
             this->handleClickPassParadeBtn(event);
             this->handleClickEndTurnBtn(event);
             this->handleClickDiscardingBtn(event);
+            this->handleClickNobunaga(event);
         }
 
         this->window->clear(sf::Color::Black);
@@ -709,6 +710,22 @@ void UI::handleClickDiscardingBtn(sf::Event event) {
         if (event.mouseButton.button == sf::Mouse::Left) {
             if (this->hand->size() > 7 && !this->isDiscarding && !this->blocking && this->discardingBtn->isClicked(*this->window)) {
                 this->isDiscarding = true;
+            }
+        }
+    }
+}
+
+void UI::handleClickNobunaga(sf::Event event) {
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*this->window);
+    if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+            if (this->players->at(this->game->getIndexActualPlayer())->getCharacter()->getType() == CharacterType::NOBUNAGA) {
+                if (this->actualPlayerSprite->getGlobalBounds().contains(mousePos.x, mousePos.y) && !this->isDiscarding && !this->blocking) {
+                    if (this->players->at(this->game->getIndexActualPlayer())->HP > 1) {
+                        this->game->pick(this->players->at(this->game->getIndexActualPlayer()), 1);
+                        this->players->at(this->game->getIndexActualPlayer())->HP -= 1;
+                    }
+                }
             }
         }
     }

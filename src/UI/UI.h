@@ -85,6 +85,7 @@ class UI {
         void handleClickPassParadeBtn(sf::Event event);
         void handleClickEndTurnBtn(sf::Event event);
         void handleClickDiscardingBtn(sf::Event event);
+        void handleClickNobunaga(sf::Event event);
 
         ~UI();
 };
