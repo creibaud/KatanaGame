@@ -596,6 +596,11 @@ void UI::handleClickHandCard(sf::Event event) {
                             this->indexActualPlayer = this->game->getIndexActualPlayer();
                             break;
                         }
+                    } else if (this->actualPlayerCardSprites->at(i)->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->players->at(this->indexActualPlayer)->getCharacter()->getType() == CharacterType::HANZO && this->hand->at(i)->getType() == CardType::WEAPON) {
+                        this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(i));
+                        this->blocking = false;
+                        this->indexActualPlayer = this->game->getIndexActualPlayer();
+                        break;
                     }
                 }
             }
