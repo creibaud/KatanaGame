@@ -447,7 +447,7 @@ void Game::recoverCards() {
     this->discards->clear();
 
     for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); it++) {
-        (*it)->honorPoints -= 1;
+        (*it)->honorPoints--;
     }
 }
 
