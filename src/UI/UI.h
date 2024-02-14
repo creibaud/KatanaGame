@@ -79,6 +79,7 @@ class UI {
         void setStackSprite();
         void setDiscardStackSprite();
         void setLogsTexts();
+        void setPermanentCircleSprites();
 
         void handleClickLogBtn(sf::Event event);
         void handleClickHandCard(sf::Event event);

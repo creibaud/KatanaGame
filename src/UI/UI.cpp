@@ -514,6 +514,7 @@ void UI::handleClickHandCard(sf::Event event) {
                                             break;
                                         }
                                         case ActionType::GEISHA: {
+                                            this->indexSelectedCard = i;
                                             break;
                                         }
                                         case ActionType::MEDITATION: {
@@ -670,12 +671,26 @@ void UI::handleClickHandCard(sf::Event event) {
                             } else if (action->getActionType() == ActionType::MEDITATION) {
                                 this->game->pick(this->players->at(this->indexSelectedPlayer), 1);
                                 this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
+                            } else if (action->getActionType() == ActionType::GEISHA) {
+                                this->game->geishaFunction(this->players->at(this->indexSelectedPlayer));
+                                this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
                             }
                         }
 
                         this->indexSelectedCard = -1;
                         this->indexSelectedPlayer = -1;
                         break;
+                    } else if (this->actualPlayerSprite->getGlobalBounds().contains(mousePos.x, mousePos.y) && this->indexSelectedPlayer == -1) {
+                        if (this->hand->at(this->indexSelectedCard)->getType() == CardType::ACTION) {
+                            Action *action = dynamic_cast<Action*>(this->hand->at(this->indexSelectedCard));
+                            if (action->getActionType() == ActionType::GEISHA) {
+                                this->game->geishaFunction();
+                                this->game->discard(this->players->at(this->indexActualPlayer), this->hand->at(this->indexSelectedCard));
+                                this->indexSelectedCard = -1;
+                                this->indexSelectedPlayer = -1;
+                                break;
+                            }
+                        }
                     }
                 }
             }

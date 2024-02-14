@@ -493,6 +493,58 @@ void Game::daimyoFunction() {
     this->pick(this->players->at(this->indexActualPlayer), 2);
 }
 
+void Game::geishaFunction(Player *player) {
+    if (player != nullptr) {
+        if (!player->isDown()) {
+            std::vector<Card*> *hand = player->getHand();
+            if (!hand->empty()) {
+                std::random_device rd;
+                std::mt19937 g(rd());
+                std::uniform_int_distribution<int> distribution(0, hand->size() - 1);
+                int randomIndex = distribution(g);
+                Card *randomCard = hand->at(randomIndex);
+                this->discard(player, randomCard);
+            }
+        }
+    } else {
+        std::vector<std::vector<Permanent*>*> *playersPermanentCards = new std::vector<std::vector<Permanent*>*>();
+        for (std::vector<Player*>::size_type i = 0; i != this->players->size(); i++) {
+            playersPermanentCards->push_back(new std::vector<Permanent*>());
+            for (std::vector<Permanent*>::iterator it = this->players->at(i)->getPermanentCardsPlayed()->begin(); it != this->players->at(i)->getPermanentCardsPlayed()->end(); it++) {
+                playersPermanentCards->at(i)->push_back(*it);
+            }
+        }
+        
+        if (!playersPermanentCards->empty()) {
+            std::random_device rd;
+            std::mt19937 g(rd());
+            std::uniform_int_distribution<int> distribution(0, playersPermanentCards->size() - 1);
+            int randomPlayerIndex = distribution(g);
+            
+            if (randomPlayerIndex == this->indexActualPlayer) {
+                randomPlayerIndex++;
+                if (randomPlayerIndex == this->nbPlayers) {
+                    randomPlayerIndex = 0;
+                }
+            }
+
+            std::vector<Permanent*> *randomPlayerPermanentCards = playersPermanentCards->at(randomPlayerIndex);
+            if (!randomPlayerPermanentCards->empty()) {
+                std::uniform_int_distribution<int> distribution2(0, randomPlayerPermanentCards->size() - 1);
+                int randomCardIndex = distribution2(g);
+                Permanent *randomPermanentCard = randomPlayerPermanentCards->at(randomCardIndex);
+                this->players->at(randomPlayerIndex)->getPermanentCardsPlayed()->erase(this->players->at(randomPlayerIndex)->getPermanentCardsPlayed()->begin() + randomCardIndex);
+                this->discards->push_back(randomPermanentCard);
+            }           
+        }
+
+        for (std::vector<std::vector<Permanent*>*>::iterator it = playersPermanentCards->begin(); it != playersPermanentCards->end(); it++) {
+            delete *it;
+        }
+        delete playersPermanentCards;
+    }
+}
+
 void Game::ceremonieDuTheFunction() {
     for (std::vector<Player*>::size_type i = 0; i != this->players->size(); i++) {
         if (static_cast<int>(i) == this->indexActualPlayer) {

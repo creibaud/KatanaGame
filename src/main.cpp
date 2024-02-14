@@ -1,4 +1,4 @@
-#include "src/UI/UI.h"
+#include "UI/UI.h"
 
 int main() {
     sf::Font *font = new sf::Font();

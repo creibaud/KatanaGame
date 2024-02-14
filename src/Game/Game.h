@@ -51,6 +51,7 @@ class Game {
 
         void criDeGuerreFunction();
         void daimyoFunction();
+        void geishaFunction(Player *player = nullptr);
         void ceremonieDuTheFunction();
         void juJitsuFunction();
 
