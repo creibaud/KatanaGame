@@ -25,7 +25,6 @@ enum class PermanentType {
  * @class Permanent
  * @brief The Permanent class represents a permanent card in the game.
  * This class inherits from the Card class and adds functionality specific to permanent cards.
- * @link Card
  */
 class Permanent : public Card {
     private:

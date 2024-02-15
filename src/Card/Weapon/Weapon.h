@@ -37,7 +37,6 @@ enum class WeaponType {
  * This class inherits from the Card class and provides additional
  * functionality specific to weapons, such as weapon type, damage,
  * and range.
- * @link Card
  */
 class Weapon : public Card {
     private:

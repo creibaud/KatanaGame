@@ -1,5 +1,18 @@
+/**
+ * @file main.cpp
+ * @brief The main function of the game.
+*/
+
 #include "UI/UI.h"
 
+/**
+ * @brief The main function of the program.
+ * 
+ * This function is the entry point of the program. It initializes various objects, loads images and fonts,
+ * creates UI elements, and manages the flow of the game. It also deallocates memory before exiting.
+ * 
+ * @return int The exit status of the program.
+ */
 int main() {
     sf::Font *font = new sf::Font();
     font->loadFromFile("assets/fonts/aAbsoluteEmpire.ttf");

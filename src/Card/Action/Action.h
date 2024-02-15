@@ -30,7 +30,6 @@ enum class ActionType {
  * @brief The Action class represents an action card in the game.
  * This class inherits from the Card class and adds an ActionType attribute.
  * It provides methods to get the action type and the index of the card.
- * @link Card
  */
 class Action : public Card {
     private:
