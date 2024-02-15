@@ -1,3 +1,8 @@
+/**
+ * @file UI.h
+ * @brief This file contains the declaration of the UI class.
+*/
+
 #ifndef UI_H
 #define UI_H
 
@@ -91,6 +96,8 @@ class UI {
         
         /**
          * @brief the menu screen
+         * @param leftImage The image for the left side of the menu
+         * @param rightImage The image for the right side of the menu
          */
         void menu(sf::Image *leftImage, sf::Image *rightImage);
 
@@ -116,6 +123,7 @@ class UI {
 
         /**
          * @brief set the honor points and health points of the players other than the actual player 
+         * @param index The index of the player
          */
         void setSpriteHonorCharactersHP(int index);
 
@@ -151,31 +159,37 @@ class UI {
 
         /**
          * @brief handle the click event on the logs button
+         * @param event The sfml event
          */
         void handleClickLogBtn(sf::Event event);
 
         /**
          * @brief handle the click event on the hand cards
+         * @param event The sfml event
          */
         void handleClickHandCard(sf::Event event);
 
         /**
          * @brief handle the click event on the parade pass button
+         * @param event The sfml event
          */
         void handleClickPassParadeBtn(sf::Event event);
 
         /**
          * @brief handle the click event on the end turn button
+         * @param event The sfml event
          */
         void handleClickEndTurnBtn(sf::Event event);
 
         /**
          * @brief handle the click event on the discard button
+         * @param event The sfml event
          */
         void handleClickDiscardingBtn(sf::Event event);
 
         /**
          * @brief handle the click event on the Nobunage character if the actual player is Nobunaga
+         * @param event The sfml event
          */
         void handleClickNobunaga(sf::Event event);
 
