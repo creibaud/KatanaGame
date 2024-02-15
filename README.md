@@ -49,3 +49,6 @@ make
 ```bash
 ./katana
 ```
+
+## Documentation
+La documentation du code est dans le dossier `doc`
