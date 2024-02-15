@@ -1,6 +1,8 @@
 #ifndef ROLE_H
 #define ROLE_H
 
+#include <string>
+
 enum class RoleType {
     SHOGUN,
     SAMURAI,
@@ -18,6 +20,7 @@ class Role {
         RoleType getType() const;
         int getLevel() const;
         int getIndex() const;
+        std::string getName() const;
 };
 
 #endif // ROLE_H

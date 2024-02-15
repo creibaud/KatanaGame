@@ -96,6 +96,7 @@ int main() {
     UI *ui = new UI(font, HP, Honor, backRole, backCard, roleImages, cardImages, characterImages);
     ui->menu(leftImage, rightImage);
     ui->start();
+    ui->score();
     delete ui;
 
     delete font;
@@ -123,6 +124,6 @@ int main() {
         delete *it;
     }
     delete characterImages;
-
+    
     return 0;
 }

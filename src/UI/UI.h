@@ -88,6 +88,8 @@ class UI {
         void handleClickDiscardingBtn(sf::Event event);
         void handleClickNobunaga(sf::Event event);
 
+        void score();
+
         ~UI();
 };
 

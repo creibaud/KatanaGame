@@ -115,12 +115,16 @@ void UI::start() {
     this->game->initCard();
     this->game->initPlayer();
 
-    while (!this->game->isGameOver()) {
+    while (!this->game->isGameOver() && this->window->isOpen()) {
         sf::Event event;
         while (this->window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 this->window->close();
-            } 
+            } else if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Q) {
+                    this->window->close();
+                }
+            }
 
             this->handleClickLogBtn(event);
             this->handleClickHandCard(event);
@@ -759,6 +763,189 @@ void UI::handleClickNobunaga(sf::Event event) {
                 }
             }
         }
+    }
+}
+
+void UI::score() {
+    this->window->create(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Katana");
+    this->window->setFramerateLimit(FPS);
+
+    sf::Text *text = new sf::Text("Score", *this->font, 50);
+    text->setFillColor(sf::Color::Red);
+    text->setPosition(SCREEN_WIDTH / 2 - text->getGlobalBounds().width / 2, 50);
+
+    std::vector<sf::Text*> texts;
+    std::vector<sf::RectangleShape*> rectangles;
+
+    int shogunTeamScore = 0;
+    int ninjaTeamScore = 0;
+    int roninTeamScore = 0;
+
+    int scorePlayer = 0;
+
+    for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); it++) {
+        scorePlayer = 0;
+
+        switch ((*it)->getRole()->getType()){
+            case RoleType::SHOGUN: {
+                scorePlayer = (*it)->honorPoints;
+                shogunTeamScore += scorePlayer;
+                break;
+            }
+            case RoleType::SAMURAI: {
+                if (this->nbPlayers == 4 || this->nbPlayers == 6) {
+                    scorePlayer = (*it)->honorPoints * 2;
+                } else {
+                    scorePlayer = (*it)->honorPoints;
+                }
+                shogunTeamScore += scorePlayer;
+                break;
+            }
+            case RoleType::NINJA: {
+                if (this->nbPlayers == 4) {
+                    int highestLevel = 0;
+                    int smallestLevel = 0;
+
+                    for (std::vector<Player*>::iterator it = this->players->begin(); it != this->players->end(); it++) {
+                        if ((*it)->getRole()->getLevel() > highestLevel) {
+                            highestLevel = (*it)->getRole()->getLevel();
+                        }
+
+                        if ((*it)->getRole()->getLevel() < smallestLevel) {
+                            smallestLevel = (*it)->getRole()->getLevel();
+                        }
+                    }
+
+                    if ((*it)->getRole()->getLevel() == highestLevel) {
+                        scorePlayer = (*it)->honorPoints * 2;
+                    } else {
+                        scorePlayer = (*it)->honorPoints;
+                    }
+                } else {
+                    scorePlayer = (*it)->honorPoints;
+                }
+                ninjaTeamScore += scorePlayer;
+                break;
+            }
+            case RoleType::RONIN: {
+                if (this->nbPlayers == 6 || this->nbPlayers == 7) {
+                    scorePlayer = (*it)->honorPoints * 3;
+                } else {
+                    scorePlayer = (*it)->honorPoints * 2;
+                }
+                roninTeamScore += scorePlayer;
+                break;
+            }
+            default:
+                break;
+        }
+
+        sf::RectangleShape *rect = new sf::RectangleShape(sf::Vector2f(600, 75));
+        rect->setFillColor(sf::Color::White);
+        rect->setPosition(150, 200 + (it - this->players->begin()) * 125);
+        rectangles.push_back(rect);
+
+        sf::Text *text = new sf::Text((*it)->getCharacter()->getName() + " (" + (*it)->getRole()->getName() + ") : ", *this->font, 30);
+        text->setFillColor(sf::Color::Black);
+        text->setPosition(15 + rect->getPosition().x, rect->getPosition().y + rect->getSize().y / 2 - text->getGlobalBounds().height / 2 - 3);
+        texts.push_back(text);
+
+        sf::Text *textHonor = new sf::Text(std::to_string(scorePlayer), *this->font, 30);
+        textHonor->setFillColor(sf::Color::Black);
+        textHonor->setPosition(rect->getPosition().x + rect->getSize().x - textHonor->getGlobalBounds().width - 15, rect->getPosition().y + rect->getSize().y / 2 - textHonor->getGlobalBounds().height / 2 - 3);
+        texts.push_back(textHonor);
+    }
+
+    sf::RectangleShape *shogunTeam = new sf::RectangleShape(sf::Vector2f(600, 75));
+    shogunTeam->setFillColor(sf::Color::Yellow);
+    shogunTeam->setPosition(SCREEN_WIDTH - 150 - shogunTeam->getSize().x, 200);
+
+    sf::Text *shogunTeamText = new sf::Text("Team Shogun & Samurai :", *this->font, 30);
+    shogunTeamText->setFillColor(sf::Color::Black);
+    shogunTeamText->setPosition(15 + shogunTeam->getPosition().x, shogunTeam->getPosition().y + shogunTeam->getSize().y / 2 - shogunTeamText->getGlobalBounds().height / 2 - 4);
+
+    sf::Text *shogunTeamScoreText = new sf::Text(std::to_string(shogunTeamScore), *this->font, 30);
+    shogunTeamScoreText->setFillColor(sf::Color::Black);
+    shogunTeamScoreText->setPosition(shogunTeam->getPosition().x + shogunTeam->getSize().x - shogunTeamScoreText->getGlobalBounds().width - 15, shogunTeam->getPosition().y + shogunTeam->getSize().y / 2 - shogunTeamScoreText->getGlobalBounds().height / 2 - 4);
+
+    sf::RectangleShape *ninjaTeam = new sf::RectangleShape(sf::Vector2f(600, 75));
+    ninjaTeam->setFillColor(sf::Color::Blue);
+    ninjaTeam->setPosition(SCREEN_WIDTH - 150 - ninjaTeam->getSize().x, 200 + 125);
+
+    sf::Text *ninjaTeamText = new sf::Text("Team Ninja :", *this->font, 30);
+    ninjaTeamText->setFillColor(sf::Color::White);
+    ninjaTeamText->setPosition(15 + ninjaTeam->getPosition().x, ninjaTeam->getPosition().y + ninjaTeam->getSize().y / 2 - ninjaTeamText->getGlobalBounds().height / 2 - 4);
+
+    sf::Text *ninjaTeamScoreText = new sf::Text(std::to_string(ninjaTeamScore), *this->font, 30);
+    ninjaTeamScoreText->setFillColor(sf::Color::White);
+    ninjaTeamScoreText->setPosition(ninjaTeam->getPosition().x + ninjaTeam->getSize().x - ninjaTeamScoreText->getGlobalBounds().width - 15, ninjaTeam->getPosition().y + ninjaTeam->getSize().y / 2 - ninjaTeamScoreText->getGlobalBounds().height / 2 - 4);
+
+    sf::RectangleShape *roninTeam = new sf::RectangleShape(sf::Vector2f(600, 75));
+    roninTeam->setFillColor(sf::Color::Red);
+    roninTeam->setPosition(SCREEN_WIDTH - 150 - roninTeam->getSize().x, 200 + 250);
+
+    sf::Text *roninTeamText = new sf::Text("Team Ronin :", *this->font, 30);
+    roninTeamText->setFillColor(sf::Color::White);
+    roninTeamText->setPosition(15 + roninTeam->getPosition().x, roninTeam->getPosition().y + roninTeam->getSize().y / 2 - roninTeamText->getGlobalBounds().height / 2 - 4);
+
+    sf::Text *roninTeamScoreText = new sf::Text(std::to_string(roninTeamScore), *this->font, 30);
+    roninTeamScoreText->setFillColor(sf::Color::White);
+    roninTeamScoreText->setPosition(roninTeam->getPosition().x + roninTeam->getSize().x - roninTeamScoreText->getGlobalBounds().width - 15, roninTeam->getPosition().y + roninTeam->getSize().y / 2 - roninTeamScoreText->getGlobalBounds().height / 2 - 4);
+
+    sf::Text *victory = new sf::Text("Victory ->", *this->font, 50);
+    victory->setFillColor(sf::Color::Green);
+
+    if (shogunTeamScore > ninjaTeamScore && shogunTeamScore > roninTeamScore) {
+        victory->setPosition(shogunTeam->getPosition().x - victory->getGlobalBounds().width - 25, shogunTeam->getPosition().y + shogunTeam->getSize().y / 2 - victory->getGlobalBounds().height / 2 - 6);
+    } else if (ninjaTeamScore > shogunTeamScore && ninjaTeamScore > roninTeamScore) {
+        victory->setPosition(ninjaTeam->getPosition().x - victory->getGlobalBounds().width - 25, ninjaTeam->getPosition().y + ninjaTeam->getSize().y / 2 - victory->getGlobalBounds().height / 2 - 6);
+    } else if (roninTeamScore > shogunTeamScore && roninTeamScore > ninjaTeamScore) {
+        victory->setPosition(roninTeam->getPosition().x - victory->getGlobalBounds().width - 25, roninTeam->getPosition().y + roninTeam->getSize().y / 2 - victory->getGlobalBounds().height / 2 - 6);
+    } else {
+        if (ninjaTeam == shogunTeam || ninjaTeam == roninTeam) {
+            victory->setPosition(ninjaTeam->getPosition().x - victory->getGlobalBounds().width - 25, ninjaTeam->getPosition().y + ninjaTeam->getSize().y / 2 - victory->getGlobalBounds().height / 2 - 6);
+        } else if (shogunTeam == roninTeam) {
+            victory->setPosition(shogunTeam->getPosition().x - victory->getGlobalBounds().width - 25, shogunTeam->getPosition().y + shogunTeam->getSize().y / 2 - victory->getGlobalBounds().height / 2 - 6);
+        }
+    }
+
+    while (true) {
+        sf::Event event;
+        while (this->window->pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                this->window->close();
+            }
+        }
+
+        this->window->clear(sf::Color::Black);
+
+        this->window->draw(*text);
+        for (std::vector<sf::RectangleShape*>::iterator it = rectangles.begin(); it != rectangles.end(); it++) {
+            this->window->draw(**it);
+        }
+
+        for (std::vector<sf::Text*>::iterator it = texts.begin(); it != texts.end(); it++) {
+            this->window->draw(**it);
+        }
+
+        this->window->draw(*shogunTeam);
+        this->window->draw(*ninjaTeam);
+
+        this->window->draw(*shogunTeamText);
+        this->window->draw(*ninjaTeamText);
+
+        this->window->draw(*shogunTeamScoreText);
+        this->window->draw(*ninjaTeamScoreText);
+
+        if (this->nbPlayers > 4) {
+            this->window->draw(*roninTeam);
+            this->window->draw(*roninTeamText);
+            this->window->draw(*roninTeamScoreText);
+        }
+
+        this->window->draw(*victory);
+        
+        this->window->display();
     }
 }
 

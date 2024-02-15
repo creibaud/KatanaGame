@@ -1,6 +1,8 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#include <string>
+
 enum class CharacterType {
     HANZO,
     USHIWAKA,
@@ -26,6 +28,7 @@ class Character {
         CharacterType getType() const;
         int getIndex() const;
         int getHP() const;
+        std::string getName() const;
 };
 
 #endif // CHARACTER_H
